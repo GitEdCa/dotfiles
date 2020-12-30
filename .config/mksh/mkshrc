@@ -687,4 +687,4 @@ HISTFILE="$HOME/.config/mksh/history"
 HISTSIZE=5000
 
 # bind ^L for clear
-bind -m '^L'=clear'^J'
+bind '^L=clear-screen'
