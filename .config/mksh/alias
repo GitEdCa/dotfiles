@@ -1,0 +1,6 @@
+alias ls='ls --color=auto'
+alias pai='doas pacman -S'
+alias pas='pacman -Ss'
+alias pau='doas pacman -Su'
+alias mkdir='mkdir -p'
+alias vim='nvim'
