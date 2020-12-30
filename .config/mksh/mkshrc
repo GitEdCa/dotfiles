@@ -688,3 +688,7 @@ HISTSIZE=5000
 
 # bind ^L for clear
 bind '^L=clear-screen'
+
+if [ -z "$TMUX" ] && [ "linux" != "$TERM" ]; then
+    exec tmux
+fi
