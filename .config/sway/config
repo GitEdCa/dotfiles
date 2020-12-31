@@ -170,5 +170,6 @@ bar {
 # keyboard
 input * {
     xkb_layout "us"
-    xkb_variant "alt-intl"
+    xkb_variant "altgr-intl"
 }
+input keyboard xkb_model "pc86"
