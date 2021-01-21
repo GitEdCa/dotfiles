@@ -1,4 +1,4 @@
- automatically add new windows to the current group
+#automatically add new windows to the current group
 sticky yes
 # snap windows to edges at 4 pixels distance
 snapdist 4
