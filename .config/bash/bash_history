@@ -1,0 +1,703 @@
+dmesg
+sudo dmesg
+sudo su
+su -
+git init
+git remote add origin https://github.com/GitEdCa/dotfiles
+git fetch
+git checkout main
+ls -l
+ls -la
+sudo apt-get install xdm
+sudo su
+su -
+mv .xinitrc .xsession
+vi .xsession 
+ln -s ~/.config/x11/Xresources ~/.Xresources
+sudo apt install firefox
+sudo apt install firefox-esr
+su -
+su -
+which openbsd-cwm
+vi ~/.xinitrc
+startx
+ln -s ~/.config/cwm/cwmrc ~/.cwmrc
+sudo apt-install dmenu
+sudo apt-get install dmenu
+xinput
+sudo apt-get install xserver-xorg-input-libinput
+sudo apt-get install iwd
+sudo su
+ping google.com
+systemctl status iwd
+journalctl -u iwd
+sudo journalctl -u iwd
+cd /etc/X11/xdm/
+ls
+sudo su
+vi ~/.cwmrc 
+exit
+vi ~/.Xresources 
+exit
+mv ~/.Xresources ~/.Xdefaults
+exit
+mv ~/.Xdefaults ~/.Xresources
+vi ~/.xsession
+exit
+xrdb -query -all
+xrd ~/.Xresources 
+xrdb ~/.Xresources 
+xterm
+exit
+xrdb -merge ~/.Xresources 
+vi ~/.xsession
+exit
+xrd ~/.Xresources 
+xrdb ~/.Xresources 
+exit
+exit
+vi ~/.xsession-errors 
+vi ~/.xsession
+exit
+vi ~/.xsession
+exit
+exit
+ln -s ~/.Xresources ~/.Xdefaults
+ls
+ls -l
+ls -la
+rm .Xresources 
+rm .Xdefaults 
+ls
+ln -s ~/.config/x11/Xresources ~/.Xresources
+sudo reboot
+exit
+ls
+vi ~/.Xresources 
+xrdb -merge "$HOME/.Xdefaults"
+xrdb -merge "$HOME/.Xresources" 
+xterm&
+ls
+man cwm
+sudo apt-get intall man
+sudo apt-get install man
+man openbsd-cwm 
+man xdm
+ls
+ls -la
+chmod u+x .xsession
+vi ~/.xsession
+exit
+vi ~/.xsession-errors 
+ls
+ls -l
+ls -la
+cat .xsession
+rm .Xresources 
+cp ~/.config/x11/Xresources ~/.Xresources
+ls -l
+ls -la
+chmod u+x .Xresources 
+xrdb -query
+vi ~/.xsession
+vi ~/.cwmrc 
+sudo systemctl stop xdm
+ls
+vi ~/.xinitrc 
+cp ~/.Xresources ~/.Xdefaults
+exit
+ls
+exit
+cp .xsession .xinitrc
+vi ~/.xinitrc 
+startx
+elar
+startx
+xrdb -merge "$HOME/.Xresources" 
+xterm
+rm ~/.Xdefaults 
+ls -la
+rm ~/.xinitrc 
+echo '' > .xsession-errors 
+sudo reboot
+cd /etc/X11/xdm/
+ls
+vi Xresources
+vi Xsetup
+ls -l
+cd ..
+ls
+vi Xsession
+grep allow-user-resources *
+vi Xsession.options 
+cd ~
+ls
+ls -l
+ls -la
+vi ~/.Xresources 
+chmod u-x .Xresources 
+ls -la
+vi .xsession
+chmod u-x .xsession
+sudo su
+exit
+
+xrdb -query
+vi ~/.cwmrc 
+exit
+ls -la
+vi ~/.xsession
+exit
+xterm -cr "#fff" -g 17x1-0+0
+xterm -cr "#fff" -g 17x1-0+0 -hold -e
+xterm -cr "#fff" -g 17x1-0+0 -hold -e ls
+systemctl status systemd-blacklight
+sudo su
+vi ~/.config/x11/profile 
+man date
+sudo su
+date +%a
+date +(%a)
+date +(%a F)
+date +(%a %F)
+date +(%a) %F
+date +"(%a) %F"
+date +"(%a) %F %H:%M"
+vi ~/.xsession
+sudo reboot
+exit
+date +"(%a) %F %H:%M"
+echo ~/.xsession
+cat ~/.xsession
+cat /sys/class/backlight/intel_backlight/brightness 
+ping google.com
+systemctl
+date +"(%a) %F %H:%M"
+vi ~/.local/bin/bar_date
+chmod u+x ~/.local/bin/bar_date 
+xterm -cr "#fff" -g 17x1-0+0 -hold -e ~/.local/bin/bar_date
+~/.local/bin/bar_date 
+vi ~/.local/bin/bar_date
+~/.local/bin/bar_date 
+vi ~/.local/bin/bar_date
+~/.local/bin/bar_date 
+xterm -cr "#fff" -g 17x1-0+0 -hold -e ~/.local/bin/bar_date
+cat /sys/class/backlight/intel_backlight/brightness 
+vi ~/.config/x11/cwmbar
+chmod u+x ~/.config/x11/cwmbar 
+xterm -geometry 1920x1+0+0 -fa "mono:size=14" -fs 12 bg "black" -fg "grey" -name termbar -class termbar -T termbar -e ~/.config/x11/cwmbar 
+xterm -geometry 1920x1+0+0 -fa "mono:size=14" -fs 12 -bg "black" -fg "grey" -name termbar -class termbar -T termbar -e ~/.config/x11/cwmbar 
+vi ~/.Xresources 
+xrdb -merge ~/.Xresources 
+xterm -geometry 1920x1+0+0 -fa "mono:size=14" -fs 12 -bg "black" -fg "grey" -name termbar -class termbar -T termbar -e ~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar
+vi ~/.Xresources 
+xrdb -merge ~/.Xresources 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+vi ~/.Xresources 
+vi ~/.config/x11/cwmbar
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+uptime
+uptime | awk '{print $3}'
+uptime | awk -F, '{sub(".*up ",x,$1);print $1}'
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+xrdb -merge ~/.Xresources 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+xrdb -merge ~/.Xresources 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+xrdb -merge ~/.Xresources 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+xrdb -merge ~/.Xresources 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+xrdb -merge ~/.Xresources 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+xrdb -merge ~/.Xresources 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+xrdb -merge ~/.Xresources 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+xrdb -merge ~/.Xresources 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+xrdb -merge ~/.Xresources 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+xrdb -merge ~/.Xresources 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+xrdb -merge ~/.Xresources 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar 
+vi ~/.Xresources 
+vi ~/.config/x11/cwmbar 
+vi ~/.Xresources 
+vi ~/.xsession
+vi ~/.config/x11/cwmbar 
+~/.config/x11/cwmbar 
+pkill termbar
+ps aux | grep termbar
+kill -9 4118
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar &
+~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar 
+~/.config/x11/cwmbar 
+vi ~/.config/x11/cwmbar 
+systemd-analyze blame
+ping google.com
+ip a
+dmesg
+sudo dmesg
+systemctl -u iwd
+systemctl status iwd
+sudo journalctl -u iwd
+systemctl status iwd
+sudo journalctl -u iwd
+dmesg
+sudo dmesg
+sudo dmesg | less
+lspci | grep rtl
+lspci
+lspci -nn
+modinfo rtl8192ce
+sudo vi /etc/apt/sources.list
+sudo apt-get update
+sudo systemctl disable wpa_supplicant
+sudo apt-get update
+sudo apt-get install firmware-realtek 
+sudo vim /boot/initrd.img-4.19.0-13-amd64 
+sudo cat /boot/initrd.img-4.19.0-13-amd64 
+sudo reboot
+sudo dmesg
+ping google.com
+sudo vi /etc/default/grub
+sudo update-grub
+sudo efibootmgr
+sudo efibootmgr -v
+sudo efibootmgr
+sudo efibootmgr -b 18 -B
+sudo efibootmgr -b 13 -B
+sudo efibootmgr -b 14 -B
+sudo efibootmgr -b 15 -B
+sudo efibootmgr -b 16 -B
+sudo efibootmgr -b 17 -B
+sudo update-grub
+sudo efibootmgr
+sudo vi /boot/grub/grub.cfg 
+sudo vi /boot/grub/grubenv
+sudo vi /boot/config-4.19.0-13-amd64 
+sudi vi /etc/default/grub.d/init-select.cfg 
+sudo vi /etc/default/grub.d/init-select.cfg 
+sudo vi /etc/default/cryptdisks 
+vi /etc/cryptsetup-initramfs/conf-hook
+vi /etc/default/grub
+vi /boot/grub/grub.cfg 
+vi /etc/grub.d/10_linux 
+vi /etc/fstab 
+dmesg | less
+sudo dmesg | less
+ls /var/log/lastlog 
+less /var/log/lastlog 
+less /var/log/syslog 
+sudo less /var/log/syslog 
+journalctl -b
+sudo journalctl -b
+sudo journalctl
+cat /sys/class/power_supply/BAT0/capacity
+cat /sys/class/power_supply/BAT0/capacity_level
+cat /sys/class/power_supply/BAT0/status
+vi /etc/crypttab 
+blkid
+sudo blkid
+lvs
+vgs
+sudo su
+vi /etc/default/grub
+cd /etc/grub.d/
+grep GRUB_PRELOAD_MODULES -r
+ls
+cd ..
+ls
+cd -
+vi /etc/default/grub
+cd /boot/
+find . -name grub-mkconfig_lib
+find / -name grub-mkconfig_lib
+echo $pkgdatadir
+ls /usr/lib/grub/grub-mkconfig_lib 
+cat /usr/lib/grub/grub-mkconfig_lib 
+less /usr/lib/grub/grub-mkconfig_lib 
+cat /sys/class/power_supply/BAT0/status
+cat /sys/class/power_supply/BAT0/capacity
+sudo su
+cd /etc/initramfs-tools/
+ls
+grep crypt -R
+grep lvm -R
+ls
+c d..
+ls
+cd ..
+ls
+vi /etc/fstab 
+cd /boot/
+ls
+grep -r crypt
+ls
+cd grub/
+grep -r crypt
+ls
+vi grub.cfg 
+vi /etc/grub.d/10_linux 
+vi /etc/grub.d/00_header 
+cd /etc/initramfs-tools/
+ls
+vi modules 
+cd /etc/initramfs-tools/conf.d/
+ls
+vi resume 
+sudo journalctl -b | grep -i noresume
+sudo journalctl -b | grep -i resume
+sudo vi /etc/default/grub
+sudo update-grub
+sudo reboot
+journalctl -b
+sudo journalctl -b
+cat /etc/initramfs-tools/conf.d/resume 
+vi /boot/grub/grub.cfg 
+ls -l /dev/disk/by-uuid/
+ls -l /dev/mapper
+less /etc/default/grub
+less /etc/crypt
+less /etc/cryptsetup-initramfs/conf-hook 
+less /etc/crypttab 
+less /etc/cryptsetup-initramfs/conf-hook 
+less /etc/crypttab 
+cat /etc/crypttab 
+ls -l /dev/disk/by-uuid/
+sudo su
+cat /etc/crypttab 
+sudo vi /etc/default/grub
+sudo update-grub
+sudo update-initramfs -u
+sudo reboot
+sudo vi /etc/default/grub
+apt-get install cryptsetup-initramfs 
+sudo apt-get install cryptsetup-initramfs 
+sudo update-initramfs -u -k all
+sudo reboot
+sudo su
+lsblk -f
+sudo vi /boot/grub/grub.cfg 
+sudo vi /etc/default/grub
+sudo update-grub
+sudo reboot
+sudo su
+exit
+ls
+vim ~/.local/bin/battery
+chmod u+x ~/.local/bin/battery 
+~/.local/bin/battery 
+vim ~/.local/bin/battery
+~/.local/bin/battery 
+vim ~/.local/bin/battery
+~/.local/bin/battery 
+echo 3680 > /sys/class/backlight/intel_backlight/brightness 
+cat /etc/udev/rules.d/backlight.rules 
+sudo vi /etc/udev/rules.d/backlight.rules 
+cat /etc/udev/rules.d/backlight.rules 
+echo 3680 > /sys/class/backlight/intel_backlight/brightness 
+man xidle
+top
+cat /sys/class/power_supply/BAT0/capacity
+uptime
+cat /sys/class/backlight/intel_backlight/brightness 
+cat /sys/class/power_supply/BAT0/capacity
+uptime
+cat /sys/class/power_supply/BAT0/capacity
+apt-cache search xlock
+man xidle
+sudo apt-get install xidle
+man xidle
+apt-cache search xlock
+sudo apt-get install x11-apps
+sudo apt-install xlockmore
+sudo apt-get install xlockmore
+apt-cache search xlockmore
+apt-cache search xlock
+apt-cache search lock
+apt-cache search xlockmore
+apt-cache search slock
+sudo apt-get install suckless-tools
+man slock
+vim ~/.cwmrc 
+vi ~/.cwmrc 
+sudo apt-get install vim
+mkdir ~/.config/systemd/user
+mkdir -p ~/.config/systemd/user
+vim ~/.config/systemd/user/battery.service
+cat /sys/class/power_supply/BAT0/capacity
+date
+cat /sys/class/power_supply/BAT0/status 
+cat /sys/class/backlight/intel_backlight/brightness 
+xidle -delay -sw -program slock -timeout 10
+xidle -delay 5 -sw -program slock -timeout 10
+sudo reboot
+date '+(%a) %d %b %H:%M
+date +(%a) %d %b %H:%M
+date '+(%a) %d %b %H:%M'
+pkill cwmbar 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar&
+vim ~/.xsession-errors 
+exit
+cat /sys/class/backlight/intel_backlight/brightness 
+echo 3680 > /sys/class/backlight/intel_backlight/brightness 
+id elar
+sudo vi /etc/udev/rules.d/backlight.rules 
+ls /etc/udev/rules.d/
+ls /etc/udev/hwdb.d/
+vi /etc/udev/udev.conf 
+udevadm test
+cat /sys/class/power_supply/BAT0/capacity
+ls /sys/class/backlight
+sudo vi /etc/udev/rules.d/backlight.rules 
+sudo udevadm test /sys/class/backlight/intel_backlight
+sudo udevadm control --reload
+echo 3680 > /sys/class/backlight/intel_backlight/brightness 
+ls -l /sys/class/backlight/intel_backlight/
+ls -l /sys/class/backlight/intel_backlight/subsystem/intel_backlight
+ls -l /sys/class/backlight/intel_backlight/subsystem/intel_backlight/brightness 
+sudo vi /etc/udev/rules.d/backlight.rules 
+sudo udevadm control --reload
+ls -l /sys/class/backlight/intel_backlight
+ls -l /sys/class/backlight/intel_backlight/brightness 
+echo 3680 > /sys/class/backlight/intel_backlight/brightness 
+sudo vi /etc/udev/rules.d/backlight.rules 
+sudo udevadm control --reload
+ls -l /sys/class/backlight/intel_backlight/brightness 
+ls -l /sys/class/backlight/intel_backlight/
+sudo udevadm trigger
+ls -l /sys/class/backlight/intel_backlight/
+cat /sys/class/backlight/intel_backlight/brightness 
+echo 3680 > /sys/class/backlight/intel_backlight/brightness 
+echo 2441 > /sys/class/backlight/intel_backlight/brightness 
+~/.local/bin/battery 
+ls -l
+echo 2441 > /sys/class/backlight/intel_backlight/brightness 
+vi ~/.local/bin/battery 
+~/.local/bin/battery 
+vi ~/.local/bin/battery 
+~/.local/bin/battery 
+vi ~/.local/bin/battery 
+~/.local/bin/battery 
+vi ~/.local/bin/battery 
+~/.local/bin/battery 
+vi ~/.local/bin/battery 
+~/.local/bin/battery 
+cat ~/.local/bin/battery 
+echo 0 > /sys/class/backlight/intel_backlight/brightness
+echo "$brightness" > /sys/class/backlight/intel_backlight/brightness
+brightness=2441
+echo "$brightness" > /sys/class/backlight/intel_backlight/brightness
+vim ~/.local/bin/battery 
+~/.local/bin/battery 
+ls -l ~/.local/bin/battery
+sh ~/.local/bin/battery
+vim ~/.local/bin/battery
+sh ~/.local/bin/battery
+vim ~/.local/bin/battery
+~/.local/bin/battery
+vim ~/.local/bin/battery
+~/.local/bin/battery
+fg
+vim ~/.local/bin/battery
+fg
+~/.local/bin/battery
+sudo apt-get install picom
+sudo apt-get install picon
+apt-cache search picom
+apt-cache search compositor
+sudo apt install compton
+compton
+man compton
+vim ~/.cwmrc 
+vim ~/.xsession
+vim ~/.config/systemd/user/battery.service 
+vim ~/.config/systemd/user/battery.timer
+systemctl list-timers
+systemctl start --user battery.timer 
+systemctl status --user battery.timer 
+systemctl --user start battery.timer 
+systemctl --user status battery.timer 
+journalctl --user battery.timer 
+journalctl --user
+sudo journalctl --user
+sudo journalctl -u t
+journalctl -u battery.timer 
+sudo journalctl -u battery.timer 
+vi ~/.config/systemd/user/battery.service 
+vi ~/.config/systemd/user/battery.timer 
+systemctl --user start battery.timer 
+systemctl --user
+systemctl --user status
+systemctl --user status battery
+systemctl --user status battery.timer
+cat /sys/class/backlight/intel_backlight/brightness 
+cat /sys/class/power_supply/BAT0/capacity
+systemctl --user status battery.timer
+systemctl --user enable battery.timer
+systemctl --user stop battery.timer 
+systemctl --user status battery.timer
+ls
+sudo cp ~/.config/systemd/user/battery.* /etc/systemd/system/
+sudo systemctl enable battery.timer
+sudo vi /etc/systemd/system/battery.timer 
+sudo systemctl enable battery.timer
+sudo systemctl start battery.timer
+systemctl list-timers
+ps
+cat /sys/class/power_supply/BAT0/capacity
+vim ~/.xsession
+vim ~/.Xresources 
+vim ~/.cwmrc 
+vim ~/.local/bin/bar_date 
+rm ~/.local/bin/bar_date 
+ls
+vim ~/.xsession
+vim ~/.config/x11/cwmbar 
+vim ~/.xsession
+exit
+ls
+cat /sys/class/power_supply/BAT0/capacity
+sudo apt-get install tlp
+sudo apt-get remove tlp
+sudo apt-get autoremove
+sudo vim ~/.config/x11/cwmbar apt-get install tlp --no-install-recommends
+sudo  apt-get install tlp --no-install-recommends
+systemctl status tlp
+sudo systemctl start tlp
+sudo systemctl enable tlp
+systemctl status tlp
+cat /sys/class/power_supply/BAT0/capacity
+vim ~/.config/x11/cwmbar 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar
+vim ~/.config/x11/cwmbar 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar
+vim ~/.config/x11/cwmbar 
+xterm -name termbar -class termbar -e ~/.config/x11/cwmbar
+sudo apt-get install pulseaudio pavucontrol
+pavucontrol 
+systemctl --user restart pulseaudio
+pavucontrol 
+cat /sys/class/power_supply/BAT0/capacity
+sudo systemctl status battery
+sudo systemctl status battery.timer 
+journalctl -u battery.service
+sudo journalctl -u battery.service
+cat /etc/systemd/system/battery.service 
+/home/elar/.local/bin/battery 
+vim /home/elar/.local/bin/battery 
+/home/elar/.local/bin/battery 
+vim /home/elar/.local/bin/battery 
+echo 4000 > /sys/class/backlight/intel_backlight/brightness 
+echo 2441 > /sys/class/backlight/intel_backlight/brightness 
+chmod 744 /home/elar/.local/bin/battery 
+ls -l /home/elar/.local/bin/battery 
+sudo systemctl start battery.service
+sudo su
+vim ~/.local/bin/test
+~/.local/bin/test
+chmod 664 ~/.local/bin/test
+~/.local/bin/test
+ls -l ~/.local/bin/test
+chmod 744 ~/.local/bin/test
+ls -l ~/.local/bin/test
+~/.local/bin/test
+vim ~/.local/bin/test
+echo 2441 > /sys/class/backlight/intel_backlight/brightness 
+~/.local/bin/test
+vim ~/.local/bin/test
+echo 2441 > /sys/class/backlight/intel_backlight/brightness 
+~/.local/bin/test
+vim ~/.local/bin/test
+~/.local/bin/test
+vim ~/.local/bin/test
+~/.local/bin/test
+vim ~/.local/bin/test
+~/.local/bin/test
+vim ~/.local/bin/test
+~/.local/bin/test
+echo 2441 > /sys/class/backlight/intel_backlight/brightness 
+~/.local/bin/test
+vim ~/.local/bin/test
+~/.local/bin/test
+vim ~/.local/bin/test
+rm ~/.local/bin/test 
+vim ~/.local/bin/battery 
+cat /sys/class/power_supply/BAT0/capacity
+cat /sys/class/power_supply/BAT0/status
+vim ~/.local/bin/battery 
+cat /sys/class/power_supply/BAT0/status
+vim ~/.local/bin/battery 
+[
+cat ~/.local/bin/battery 
+st=Charging
+[ "$st" = "Dis" ]
+[ "$st" = "Dis" ] && echo "HOLA"
+[ "$st" = "Charging" ] && echo "HOLA"
+ls
+cp /etc/systemd/system/battery.* ~/.config/systemd/user/
+ls ~/.config/systemd/user/
+git status
+git add -f ~/.config/systemd/user/battery.*
+git status
+git add -f ~/.local/bin/battery 
+git status
+vim ~/.local/bin/battery 
+vim ~/.config/systemd/user/battery.service 
+vim ~/.config/cwm/cwmrc 
+git status
+git diff
+git add -f ~/.config/cwm/cwmrc 
+git status
+git diff
+git status
+git commit
+git config --global user.email edgar.cabral@protonmail.com
+git config --global user.name "Ragard Lebac"
+git config --global core.editor vim
+git commit
+git push origin main
+git status
+cat /sys/class/power_supply/BAT0/capacity
+ls
+ls -la
+rm xclipboard 
+cat ~/.bash_history
+rm ~/.bash_history 
+vi ~/.bashrc 
+exit
+cat .bash_logout 
+vi ~/.profile 
+cat ~/.config/x11/profile 
+mv ~/.profile ~/.config/x11/profile 
+ln -s ~/.config/x11/profile ~/.profile
+ls -l
+vi ~/.profile 
+exit

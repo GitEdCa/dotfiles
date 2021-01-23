@@ -8,25 +8,23 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
+VISUAL=vi; export VISUAL EDITOR=vi; export EDITOR
+set -o vi
+
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
-	. "$HOME/.bashrc"
+    if [ -f ~/.config/bash/bashrc ]; then
+	. ~/.config/bash/bashrc
     fi
 fi
-. "$HOME/.config/mksh/mkshrc"
 
 # set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
+if [ -d /.config/bin ] ; then
+    PATH=/.config/bin:"$PATH"
 fi
 
 # set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
-fi
-
-if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
-    sway
+if [ -d /.config/.local/bin ] ; then
+    PATH=/.config/.local/bin:"$PATH"
 fi
