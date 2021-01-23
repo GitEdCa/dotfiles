@@ -1,0 +1,27 @@
+#!/bin/sh
+
+today()
+{
+	DATE=$(date '+(%a) %d %b %H:%M')
+}
+
+up_time()
+{
+	UPTIME=$(uptime | awk -F, '{sub(".*up ",x,$1);print $1}')
+}
+
+bat_capacity()
+{
+	BAT=$(cat /sys/class/power_supply/BAT0/capacity)
+}
+
+tput civis
+
+while true; do
+	today
+	up_time
+	bat_capacity
+	tput cup 1 128
+	printf "up: %s | bat: %s%% | %s" "$UPTIME" "$BAT" "$DATE"
+	sleep 1
+done
