@@ -12,9 +12,9 @@ fontname "fixed:pixelsize=13:style=semicondensed"
 unbind-key all
 
 # mod + enter = new xterm
-bind-key 4-Return terminal
+bind-key 4-Return xterm
 bind-key 4-p dmenu_run
-bind-key CM-l lock
+bind-key CM-l slock
 # mod + backspace = hide window
 bind-key 4-BackSpace window-hide
 
@@ -29,7 +29,7 @@ bind-key M-Tab window-cycle
 bind-key 4S-Tab window-rcycle
 bind-key MS-Tab window-rcycle
 # mod + q = kill window
-bind-key 4-q window-delete
+bind-key 4-c window-delete
 # set a window's label
 bind-key 4-n window-menu-label
 
@@ -75,7 +75,7 @@ bind-key 4S-equal window-hmaximize
 # mod + shift + R = restart cwm, reloading configuration
 bind-key 4S-r restart
 # mod + shift + E = log out
-bind-key 4S-e quit
+bind-key 4S-q quit
 
 # unbind default mouse actions
 unbind-mouse M-1
@@ -101,3 +101,6 @@ command xcalc  xcalc
 
 # ignore these windows when tiling/cycling
 ignore xclock
+ignore termbar 
+autogroup 0 termbar 
+gap 20 0 0 0

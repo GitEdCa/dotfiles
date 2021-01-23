@@ -1,0 +1,22 @@
+#!/bin/sh
+
+capacity="$(cat /sys/class/power_supply/BAT0/capacity)"
+status="$(cat /sys/class/power_supply/BAT0/status)"
+
+[ "$capacity" -gt "30" ] || [ "$status" = "Charging" ] && exit 0
+
+bright="$(cat /sys/class/backlight/intel_backlight/brightness)"
+
+echo 0 > /sys/class/backlight/intel_backlight/brightness
+sleep .5
+echo "$bright" > /sys/class/backlight/intel_backlight/brightness
+sleep .5
+echo 0 > /sys/class/backlight/intel_backlight/brightness
+sleep .5
+echo "$bright" > /sys/class/backlight/intel_backlight/brightness
+sleep .5
+echo 0 > /sys/class/backlight/intel_backlight/brightness
+sleep .5
+echo "$bright" > /sys/class/backlight/intel_backlight/brightness
+sleep .5
+exit 0

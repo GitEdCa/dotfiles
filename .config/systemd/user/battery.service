@@ -1,0 +1,9 @@
+[Unit]
+Description=Check battery capacity and status
+
+[Service]
+Type=oneshot
+ExecStart=/home/elar/.local/bin/battery
+
+[Install]
+WantedBy=default.target
