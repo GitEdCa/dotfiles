@@ -1,17 +1,22 @@
-# use UTF-8 everywhere
-export LANG=en_US.UTF-8
+# load .bash_profile
+if [ -f ~/.bash_profile ]; then
+	. ~/.bash_profile
+fi
 
-# set your background color
-#xsetroot -solid dimgray
+# set UTF-8
+export LC_ALL=en_US.UTF-8
 
-# xidle will lock your display after a period of inactivity
-#xidle &
+# set us:alt-intl layout
+setxkbmap us -variant intl
+
+# xautolock will lock your display after a period of inactivity
+xautolock -time 10 -locker slock &
 
 # disable system beep
 #xset b off
 
 # init dwmblocks
-dwmblocks &
+xterm &
 
 # init dwm
 exec dwm
