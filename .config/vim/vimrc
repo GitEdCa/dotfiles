@@ -1,3 +1,6 @@
+" CTRL + P
+set runtimepath^=~/.config/vim/bundle/ctrlp.vim
+
 " designed for vim 8+
 " (see rwx.gg/vi for help)
 let skip_defaults_vim=1
@@ -14,9 +17,9 @@ set ruler
 
 " tabs are the devil
 set expandtab
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
 set smartindent
 set smarttab
 set autoindent
@@ -43,7 +46,9 @@ set icon
 set hlsearch
 set incsearch
 set linebreak
-map <silent> <leader><cr> :noh<cr>
+
+"This unsets the "last search pattern" register by hitting return
+nnoremap <CR> :noh<CR><CR>
 
 " avoid most of the 'Hit Enter ...' messages
 set shortmess=aoOtI
@@ -92,7 +97,7 @@ set hidden
 set history=100
 
 " here because plugins and stuff need it
-syntax enable
+syntax off
 
 " faster scrolling
 set ttyfast
@@ -100,24 +105,9 @@ set ttyfast
 " allow sensing the filetype
 filetype plugin on
 
-" Install vim-plug if not already installed
-" (Yes I know about Vim 8 Plugins. They suck.)
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.config/vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
 " high contrast for streaming, etc.
 set background=dark
 colorscheme elflord
-
-" only load plugins if Plug detected
-if filereadable(expand("~/.vim/autoload/plug.vim"))
-  call plug#begin('~/.vim/vimplugins')
-    Plug 'ctrlpvim/ctrlp.vim'
-  call plug#end()
-endif
 
 " enable omni-completion
 set omnifunc=syntaxcomplete#Complete
