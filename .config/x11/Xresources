@@ -58,3 +58,5 @@ XTerm.vt100.boldMode: false
 XTerm.vt100.faceSize: 10
 XTerm.vt100.internalBorder: 16
 XTerm.borderWidth: 0
+XTerm*background: black
+XTerm*foreground: lightgray
