@@ -25,7 +25,7 @@ set smarttab
 set autoindent
 
 " easier to see characters when `set paste` is on
-set listchars=tab:→\ ,eol:↲,nbsp:␣,space:·,trail:·,extends:⟩,precedes:⟨
+"set listchars=tab:→\ ,eol:↲,nbsp:␣,space:·,trail:·,extends:⟩,precedes:⟨
 
 " enough for line numbers + gutter within 80 
 set textwidth=73 
@@ -139,13 +139,8 @@ map <C-h> <C-W>h
 map <C-l> <C-W>l
 
 " functions keys
-map <F1> :set number!<CR> :set relativenumber!<CR>
-nmap <F2> :call <SID>SynStack()<CR>
-set pastetoggle=<F3>
-map <F4> :set list!<CR>
-map <F5> :set cursorline!<CR>
-map <F7> :set spell!<CR>
-map <F12> :set fdm=indent<CR>
+map <F1> :!run %<CR>
+map <F5> :!template %<CR>
 
 " disable arrow keys (vi muscle memory)
 noremap <up> :echoerr "Umm, use k instead"<CR>
