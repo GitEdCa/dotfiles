@@ -14,7 +14,7 @@ map gT :read !template %
 map #5 :read !template %
 
 "map  f ::!env FZF_DEFAULT_COMMAND='git ls-files' fzf >> %:editGIEdit :bg
-map  ::!env FZF_DEFAULT_COMMAND='git ls-files -o' fzf >> %:readGIe! 
+map  ::!env FZF_DEFAULT_COMMAND='git ls-files' fzf >> %:readGIe! 
 map & wb"zye:vs new:o:r !git grep "zp
 map gX :!run %
 map #1 :!run %

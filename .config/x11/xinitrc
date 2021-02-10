@@ -7,7 +7,7 @@ fi
 export LC_ALL=en_US.UTF-8
 
 # set us:alt-intl layout
-setxkbmap us -variant intl
+setxkbmap us -variant altgr-intl -option nodeadkeys
 
 # xautolock will lock your display after a period of inactivity
 xautolock -time 10 -locker slock &
@@ -17,6 +17,12 @@ xautolock -time 10 -locker slock &
 
 # init dwmblocks
 xterm &
+
+# set bar status
+mydate() { 
+    dte=$(date +"(%a) %Y-%m-%d %R") 
+}
+while true; do mydate; xsetroot -name "$dte"; sleep 60; done &
 
 # init dwm
 exec dwm

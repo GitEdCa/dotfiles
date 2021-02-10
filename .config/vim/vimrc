@@ -139,8 +139,8 @@ map <C-h> <C-W>h
 map <C-l> <C-W>l
 
 " functions keys
-map <F1> :!run %<CR>
-map <F5> :!template %<CR>
+map <F1> :w<CR>:!run %<CR>
+map <F5> :r !template %<CR>
 
 " disable arrow keys (vi muscle memory)
 noremap <up> :echoerr "Umm, use k instead"<CR>

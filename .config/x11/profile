@@ -10,13 +10,15 @@ if [ -f ~/.bashrc ]; then
 fi
 
 # Wayland
-export XDG_RUNTIME_DIR=/tmp
-export GDK_BACKEND=wayland
+#export XDG_RUNTIME_DIR=/tmp
+#export GDK_BACKEND=wayland
 
 # Golang
-export GOPATH=~/.local/bin
+#export GOPATH=~/.local/bin
 
 # If running from ttyv0 start sway
-if [ "$(tty)" = "/dev/ttyv0" ]; then
-    exec sway
-fi
+#if [ "$(tty)" = "/dev/ttyv0" ]; then
+#    exec sway
+#fi
+
+export PATH="$HOME/.poetry/bin:$PATH"
