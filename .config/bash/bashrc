@@ -1,6 +1,7 @@
 VISUAL=vi; export VISUAL
 EDITOR=vi; export EDITOR
 PAGER=/usr/bin/less; export PAGER
+TERM=xterm-256color; export TERM
 
 export CDPATH=".:~" 
 
@@ -59,3 +60,4 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+source "/home/elar/apps/cargo/env"

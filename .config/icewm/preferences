@@ -1,0 +1,28 @@
+OpaqueMove=0
+OpaqueResize=0
+SmartPlacement=1
+# Hide title bar when maximized
+HideTitleBarWhenMaximized=1
+# Number of workspaces
+WorkspaceNames=" 1 "
+# Show workspace switching buttons on task bar.
+TaskBarShowWorkspaces=0
+# Show ‘window list’ menu on task bar.
+TaskBarShowWindowListMenu=0
+# Show windows from all workspaces on tray.
+TrayShowAllWindows=0
+# Show mailbox status on task bar.
+TaskBarShowMailboxStatus=0
+# Show minimize all icon
+TaskBarShowShowDesktopButton=0
+# Show network status
+TaskBarShowNetStatus=0
+# Show memory usage status
+TaskBarShowMEMStatus=0
+# Show cpu status
+TaskBarShowCPUStatus=0
+# Change format of timer
+TimeFormat="%R"
+#  Focus windows by clicking
+ClickToFocus=0
+RaiseOnFocus=1

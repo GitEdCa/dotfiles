@@ -1,0 +1,8 @@
+runonce "F8" Alacritty alacritty 
+runonce "F9" Navigator firefox
+
+key "XF86AudioLowerVolume" /bin/pactl set-sink-volume @DEFAULT_SINK@ -5%
+key "XF86AudioRaiseVolume" /bin/pactl set-sink-volume @DEFAULT_SINK@ +5%
+key "XF86AudioMute" /bin/pactl set-sink-mute @DEFAULT_SINK@ toggle
+key "XF86MonBrightnessUp"    /bin/light -T 1.4
+key "XF86MonBrightnessDown"  /bin/light -T 0.72
