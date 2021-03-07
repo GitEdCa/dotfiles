@@ -1,7 +1,7 @@
 unbind-key M-Left
 unbind-key M-Right
 bind-key M-Return	alacritty
-bind-key M-p	    dmenu_run
+#bind-key M-p	    dmenu_run
 bind-key CM-1		group-only-1
 bind-key CM-2		group-only-2
 bind-key CM-3		group-only-3
@@ -9,10 +9,11 @@ bind-key CMS-0		window-movetogroup-0
 bind-key CMS-1		window-movetogroup-1
 bind-key CMS-2		window-movetogroup-2
 bind-key CMS-3		window-movetogroup-3
-bind-key M-j		window-cycle
-bind-key M-k		window-cycle
+#bind-key M-j		window-cycle
+#bind-key M-k		window-cycle
 bind-key M-t		window-maximize
 bind-key M-v		window-vtile
+bind-key M-s		window-htile
 bind-key CM-l		slock
 
 bind-mouse M-2 window-lower
@@ -25,18 +26,14 @@ bind-key XF86AudioMute "/bin/pactl set-sink-mute @DEFAULT_SINK@ toggle"
 bind-key XF86MonBrightnessUp    "/bin/light -T 1.4"
 bind-key XF86MonBrightnessDown  "/bin/light -T 0.72"
 
-color activeborder	"#333"
-color inactiveborder	"#000"
-color menubg		"#a8ff60"
-color menufg		"#000"
+borderwidth 2
+color   activeborder    blue
+#color   inactiveborder   darkblue
 
-fontname		"spleen:pixelsize=20"
+fontname		"terminus:pixelsize=12:regular"
 snapdist		20
-sticky			yes
+sticky			no
 
-command firefox		"firefox"
-command gimp		"gimp"
-command gthumb		"gthumb"
-command inkscape	"inkscape"
-command iridium		"iridium --enable-unveil"
-command office		"libreoffice"
+command firefox		"/bin/firefox"
+command alacritty	"/bin/alacritty"
+command office		"/bin/libreoffice"

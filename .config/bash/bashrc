@@ -1,7 +1,7 @@
 VISUAL=vi; export VISUAL
 EDITOR=vi; export EDITOR
 PAGER=/usr/bin/less; export PAGER
-TERM=xterm-256color; export TERM
+[ -z "$TMUX" ]  && export TERM=xterm-256color
 
 export CDPATH=".:~" 
 
@@ -61,3 +61,8 @@ if ! shopt -oq posix; then
   fi
 fi
 source "/home/elar/apps/cargo/env"
+
+# launching tmux by default
+if [[ "$TERM" != 'screen-256color' ]]; then 
+    tmux attach-session -t "$USER" || tmux new-session -s "$USER"
+fi
