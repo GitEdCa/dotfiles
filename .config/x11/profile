@@ -14,11 +14,13 @@ fi
 #export GDK_BACKEND=wayland
 
 # Golang
-#export GOPATH=~/.local/bin
+export GOPATH=~/.local/bin
+source "/home/elar/apps/cargo/env"
+
+# Kotlin
+PATH=~/.local/bin:~/apps/kotlinc/bin:"$PATH"
 
 # If running from ttyv0 start sway
-#if [ "$(tty)" = "/dev/ttyv0" ]; then
-#    exec sway
+#if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
+#	sway
 #fi
-
-export PATH="$HOME/.poetry/bin:$PATH"
