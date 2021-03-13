@@ -1,8 +1,3 @@
-# load .bash_profile
-if [ -f ~/.bash_profile ]; then
-	. ~/.bash_profile
-fi
-
 # set UTF-8
 export LC_ALL=en_US.UTF-8
 
@@ -12,17 +7,8 @@ setxkbmap us -variant altgr-intl -option nodeadkeys
 # xautolock will lock your display after a period of inactivity
 xautolock -time 10 -locker slock &
 
-# disable system beep
-#xset b off
-
 # init dwmblocks
 xterm &
 
-# set bar status
-mydate() { 
-    dte=$(date +"(%a) %Y-%m-%d %R") 
-}
-while true; do mydate; xsetroot -name "$dte"; sleep 60; done &
-
-# init dwm
-exec dwm
+# init cwm
+exec cwm

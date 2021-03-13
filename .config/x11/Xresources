@@ -60,3 +60,5 @@ XTerm.vt100.internalBorder: 16
 XTerm.borderWidth: 0
 XTerm*background: black
 XTerm*foreground: lightgray
+XTerm.vt100.backarrowKey: false
+XTerm.ttyModes: erase ^?

@@ -60,7 +60,7 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-source "/home/elar/apps/cargo/env"
+#source "/home/elar/apps/cargo/env"
 
 # launching tmux by default
 if [[ "$TERM" != 'screen-256color' ]]; then 
