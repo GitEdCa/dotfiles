@@ -66,3 +66,12 @@ fi
 if [[ "$TERM" != 'screen-256color' ]]; then 
     tmux attach-session -t "$USER" || tmux new-session -s "$USER"
 fi
+
+# rust
+source "/home/elar/apps/rust/cargo/env"
+
+# fzf
+if [[ -d '/usr/share/doc/fzf' ]]; then
+    source /usr/share/doc/fzf/completion.bash
+    source /usr/share/doc/fzf/key-bindings.bash
+fi

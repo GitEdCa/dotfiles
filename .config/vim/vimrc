@@ -24,9 +24,6 @@ set smartindent
 set smarttab
 set autoindent
 
-" enough for line numbers + gutter within 80 
-set textwidth=73 
-
 syntax on
 
 " more risky, but cleaner
