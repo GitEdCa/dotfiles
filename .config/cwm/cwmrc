@@ -1,7 +1,7 @@
 unbind-key M-Left
 unbind-key M-Right
 unbind-key M-Return
-bind-key CM-Return	xterm
+bind-key CM-Return	alacritty
 bind-key CM-1		group-only-1
 bind-key CM-2		group-only-2
 bind-key CM-3		group-only-3
