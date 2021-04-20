@@ -31,7 +31,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(general helm-projectile projectile helm use-package)))
+ )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -40,12 +40,12 @@
  )
 
 ;; Libraries
-(use-package evil
-  :ensure t
-  :init
-    (setq evil-want-C-u-scroll t)
-  :config
-  (evil-mode))
+;(use-package evil
+;  :ensure t
+;  :init
+;    (setq evil-want-C-u-scroll t)
+;  :config
+;  (evil-mode))
 
 (use-package helm
   :ensure t
@@ -66,13 +66,6 @@
     (setq ffip-use-rust-fd t)
   :bind (("C-x f" . find-file-in-project)))
 
-(defun ffip-diff-mode-hook-setup ()
-    (evil-local-set-key 'normal "K" 'diff-hunk-prev)
-    (evil-local-set-key 'normal "J" 'diff-hunk-next)
-    (evil-local-set-key 'normal "P" 'diff-file-prev)
-    (evil-local-set-key 'normal "N" 'diff-file-next)
-    (evil-local-set-key 'normal (kbd "RET") 'ffip-diff-find-file)
-    (evil-local-set-key 'normal "o" 'ffip-diff-find-file))
 (add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-setup)
 	
 ;; Theme
@@ -115,3 +108,19 @@
       (eshell-send-input)
       (end-of-buffer)
       (switch-to-buffer-other-window buf))))
+
+
+(use-package dumb-jump
+;  :bind
+;  (:map evil-motion-state-map
+;        ("C-]" . 'dumb-jump-go)
+;        ("C-}" . 'dumb-jump-go-prompt))
+  :config
+  (setq dumb-jump-prefer-searcher 'ag)
+  :ensure)
+
+
+(use-package ido
+  :config
+  (setq ido-enable-flex-matching t)
+  (ido-mode 1))
