@@ -1,33 +1,64 @@
+" designed for vim 8+
+" (see rwx.gg/vi for help)
+let skip_defaults_vim=1
 set nocompatible
-syntax enable
-filetype plugin on
 
-" adding Ctrl+P plugin
-set runtimepath^=~/.config/nvim/bundle/ctrlp.vim
+" activate line numbers
+set number
 
-" adding Ctrl+R plugin
-set runtimepath^=~/.config/nvim/bundle/ctrlr.vim
+" disable relative line numbers, remove no to sample it
+set norelativenumber
 
-
-set wildmenu
-
-command! MakeTags !ctags -R .
-
-let g:netrw_banner=0        " disable annoying banner
-let g:netrw_browse_split=4  " open in prior window
-let g:netrw_altv=1          " open splits to the right
-let g:netrw_liststyle=3     " tree view
-let g:netrw_list_hide=netrw_gitignore#Hide()
-let g:netrw_list_hide.=',\(^\|\s\s\)\zs\.\S\+'
-
-set nu rnu
-colorscheme gruvbox
-highlight Normal ctermbg=NONE
-tnoremap <Esc> <C-\><C-n>
-
-set bg=dark
-
-set shiftwidth=4
+" tabs are the devil
 set expandtab
 set tabstop=4
-"set softtabstop=3
+set softtabstop=4
+set shiftwidth=4
+
+" more risky, but cleaner
+set nobackup
+set noswapfile
+set nowritebackup
+set hidden
+
+"This unsets the "last search pattern" register by hitting return
+nnoremap <CR> :noh<CR><CR>
+
+" high contrast for streaming, etc.
+set background=dark
+colorscheme gruvbox
+
+" map leader key
+let mapleader = ","
+tnoremap <expr> <C-R> '<C-\><C-N>"'.nr2char(getchar()).'pi'
+
+"To use `ALT+{h,j,k,l}` to navigate windows from any mode: >
+tnoremap <A-h> <C-\><C-N><C-w>h
+tnoremap <A-j> <C-\><C-N><C-w>j
+tnoremap <A-k> <C-\><C-N><C-w>k
+tnoremap <A-l> <C-\><C-N><C-w>l
+inoremap <A-h> <C-\><C-N><C-w>h
+inoremap <A-j> <C-\><C-N><C-w>j
+inoremap <A-k> <C-\><C-N><C-w>k
+inoremap <A-l> <C-\><C-N><C-w>l
+nnoremap <A-h> <C-w>h
+nnoremap <A-j> <C-w>j
+nnoremap <A-k> <C-w>k
+nnoremap <A-l> <C-w>l
+
+" exit terminal mode with ESC
+tnoremap <Esc> <C-\><C-n>
+" fzf
+nnoremap <silent> <C-p> :Files<CR>
+nnoremap <silent> <C-g> :GFiles<CR>
+nnoremap <C-f> :Rg! 
+let g:fzf_layout = {'down':'10'}
+
+" set bash as shell
+set shell=cmd.exe
+
+" neoterm
+let g:neoterm_default_mod="botright vertical"
+let g:neoterm_size="65"
+let g:neoterm_shell="bash"
+nnoremap <leader>b :T build<CR>
