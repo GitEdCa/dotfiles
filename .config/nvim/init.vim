@@ -1,14 +1,3 @@
-" designed for vim 8+
-" (see rwx.gg/vi for help)
-let skip_defaults_vim=1
-set nocompatible
-
-" activate line numbers
-set number
-
-" disable relative line numbers, remove no to sample it
-set norelativenumber
-
 " tabs are the devil
 set expandtab
 set tabstop=4
@@ -48,17 +37,46 @@ nnoremap <A-l> <C-w>l
 
 " exit terminal mode with ESC
 tnoremap <Esc> <C-\><C-n>
-" fzf
-nnoremap <silent> <C-p> :Files<CR>
-nnoremap <silent> <C-g> :GFiles<CR>
-nnoremap <C-f> :Rg! 
-let g:fzf_layout = {'down':'10'}
 
-" set bash as shell
-set shell=cmd.exe
+" CtrlP plugin
+if executable('rg')
+    let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
+    let g:ctrlp_use_caching = 0
+endif
+" Change mapping
+let g:ctrlp_map = '<Leader>p'
+" Open buffer with CtrlP
+nnoremap <Leader>b :CtrlPBuffer<CR>
 
-" neoterm
-let g:neoterm_default_mod="botright vertical"
-let g:neoterm_size="65"
-let g:neoterm_shell="bash"
-nnoremap <leader>b :T build<CR>
+" RipGrep
+if executable("rg")
+    set grepprg=rg\ --vimgrep\ --no-heading
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+endif
+" open quickfix after grep
+augroup quickfix
+    autocmd!
+    autocmd QuickFixCmdPost [^l]* cwindow
+    autocmd QuickFixCmdPost l* lwindow
+augroup END
+
+" shift + insert to paste
+map <silent> <S-Insert> "+p
+imap <silent> <S-Insert> <Esc>"+pa
+
+" set makeprg
+autocmd FileType c setlocal makeprg=cl\ -Zi\ %\ user32.lib
+"nnoremap <A-m> :make<bar>cw<CR>
+nnoremap <A-m> :make<CR>
+
+" set tcd when new tab
+function! OnTabEnter(path)
+  if isdirectory(a:path)
+    let dirname = a:path
+  else
+    let dirname = fnamemodify(a:path, ":h")
+  endif
+  execute "tcd ". dirname
+endfunction()
+
+autocmd TabNewEntered * call OnTabEnter(expand("<amatch>"))
