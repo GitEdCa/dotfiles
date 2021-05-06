@@ -42,17 +42,14 @@ tnoremap <Esc> <C-\><C-n>
 if executable('rg')
     let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
     let g:ctrlp_use_caching = 0
+    set grepprg=rg\ --vimgrep\ --no-heading
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
 " Change mapping
 let g:ctrlp_map = '<Leader>p'
 " Open buffer with CtrlP
 nnoremap <Leader>b :CtrlPBuffer<CR>
 
-" RipGrep
-if executable("rg")
-    set grepprg=rg\ --vimgrep\ --no-heading
-    set grepformat=%f:%l:%c:%m,%f:%l:%m
-endif
 " open quickfix after grep
 augroup quickfix
     autocmd!
