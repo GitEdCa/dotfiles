@@ -1,83 +1,71 @@
-(require 'package)
-;(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`;; and `package-pinned-packages`. Most users will not need or want to do this.
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(package-initialize)
-
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
+;; This is only needed once, near the top of the file
 (eval-when-compile
+  ;; Following line is not needed if use-package.el is in ~/.emacs.d
+  (add-to-list 'load-path "https://melpa.org/packages/")
   (require 'use-package))
 
-;; Minimal UI
+;expand-region
+(use-package expand-region
+  :ensure t  
+  :bind ("C-=" . er/expand-region))
+; apply grep
+ (grep-apply-setting 'grep-find-command  '("rg -n -H --no-heading -e '' $(git rev-parse --show-toplevel || pwd)" . 27))
+
+(global-hl-line-mode 1)
+;set theme
+(set-face-background 'hl-line "midnight blue")
+(load-theme 'deeper-blue)
+
+(setq compilation-directory-locked nil)
 (scroll-bar-mode -1)
-(tool-bar-mode   -1)
-(tooltip-mode    -1)
-(menu-bar-mode   -1)
-(global-hl-line-mode +1)
-; supress startup screen
-(setq inhibit-startup-message t)
-;Suppress Windows annoying beep or bell - Visible bell
-(setq-default visible-bell t)
-;Do not open file or user dialog.
-(setq use-file-dialog nil)
-(setq use-dialog-box nil)
+(setq shift-select-mode nil)
+(setq enable-local-variables nil)
 
+(display-battery-mode 1)
 
+; avoid welcome page
+(setq inhibit-startup-screen t)
+; Turn off the toolbar
+(tool-bar-mode 0)
+
+; activate ido mode
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(ido-mode 1)
+
+; Setup my find-files
+(define-key global-map "\ef" 'ido-find-file)
+(define-key global-map "\eF" 'ido-find-file-other-window)
+
+(global-set-key (read-kbd-macro "\eb")  'ido-switch-buffer)
+(global-set-key (read-kbd-macro "\eB")  'ido-switch-buffer-other-window)
+
+; save buffers
+(define-key global-map "\es" 'save-buffer)
+
+; Move windows with meta
+(setq ediff-split-window-function 'split-window-vertically)
+
+; Turn off the bell on Mac OS X
+(defun nil-bell ())
+(setq ring-bell-function 'nil-bell)
+
+;; Org mode
+(use-package org
+	     :ensure t)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(package-selected-packages
+   '(expand-region ace-jump-mode org use-package helm-projectile general fzf evil-leader dumb-jump doom-themes)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-;; Libraries
-;(use-package evil
-;  :ensure t
-;  :init
-;    (setq evil-want-C-u-scroll t)
-;  :config
-;  (evil-mode))
-
-(use-package helm
-  :ensure t
-  :bind (("<f1>" . helm-find-files)
-         ("<f4>" . helm-buffers-list)
-         ("<f5>" . helm-show-kill-ring)
-         ("<f6>" . helm-bookmarks)
-         ("M-x" . helm-M-x))
-  :config
-  (helm-mode 1)
-  (require 'helm-config)
-  (setq-default helm-M-x-fuzzy-match t))
-
-; find-file-in-project
-(use-package find-file-in-project
-  :ensure t
-  :init
-    (setq ffip-use-rust-fd t)
-  :bind (("C-x f" . find-file-in-project)))
-
-(add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-setup)
-	
-;; Theme
-(use-package doom-themes
-  :ensure t
-  :config
-  (load-theme 'doom-one t))
-
-;; Org mode
-(use-package org
-  :ensure t)
-
 (defun my-compile ()
   (interactive)
   ;; Switch to `*shell*'
@@ -108,19 +96,3 @@
       (eshell-send-input)
       (end-of-buffer)
       (switch-to-buffer-other-window buf))))
-
-
-(use-package dumb-jump
-;  :bind
-;  (:map evil-motion-state-map
-;        ("C-]" . 'dumb-jump-go)
-;        ("C-}" . 'dumb-jump-go-prompt))
-  :config
-  (setq dumb-jump-prefer-searcher 'ag)
-  :ensure)
-
-
-(use-package ido
-  :config
-  (setq ido-enable-flex-matching t)
-  (ido-mode 1))
