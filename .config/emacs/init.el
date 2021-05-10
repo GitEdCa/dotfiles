@@ -1,19 +1,26 @@
 ;; This is only needed once, near the top of the file
 (eval-when-compile
   ;; Following line is not needed if use-package.el is in ~/.emacs.d
-  (add-to-list 'load-path "https://melpa.org/packages/")
-  (require 'use-package))
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/")
+	       (require 'use-package)))
+;; bootstrap use-package
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
 ;expand-region
 (use-package expand-region
   :ensure t  
   :bind ("C-=" . er/expand-region))
-; apply grep
- (grep-apply-setting 'grep-find-command  '("rg -n -H --no-heading -e '' $(git rev-parse --show-toplevel || pwd)" . 27))
 
-(global-hl-line-mode 1)
+(use-package multiple-cursors
+  :ensure t
+  :bind ("C-c m c" . mc/edit-lines)
+  ("C->" . mc/mark-next-like-this)
+  ("C-<" . mc/mark-previous-like-this)
+  ("C-c C-<" . mc/mark-all-like-this))
+
 ;set theme
-(set-face-background 'hl-line "midnight blue")
 (load-theme 'deeper-blue)
 
 (setq compilation-directory-locked nil)
@@ -33,12 +40,8 @@
 (setq ido-everywhere t)
 (ido-mode 1)
 
-; Setup my find-files
-(define-key global-map "\ef" 'ido-find-file)
-(define-key global-map "\eF" 'ido-find-file-other-window)
-
-(global-set-key (read-kbd-macro "\eb")  'ido-switch-buffer)
-(global-set-key (read-kbd-macro "\eB")  'ido-switch-buffer-other-window)
+; moving to other window
+(global-set-key (kbd "C-;")  #'other-window)
 
 ; save buffers
 (define-key global-map "\es" 'save-buffer)
@@ -59,7 +62,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(expand-region ace-jump-mode org use-package helm-projectile general fzf evil-leader dumb-jump doom-themes)))
+   '(multiple-cursors expand-region ace-jump-mode org use-package helm-projectile general fzf evil-leader dumb-jump doom-themes)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
