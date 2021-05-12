@@ -65,7 +65,7 @@ function M.setup()
         }
     }
 
-    local workspace_folder = home .. "/lang/java" .. vim.fn.fnamemodify(root_dir, ":p:h:t")
+    local workspace_folder = home .. "/lang/java/.workspace/" .. vim.fn.fnamemodify(root_dir, ":p:h:t")
     local config = {
         flags = {
           allow_incremental_sync = true,
