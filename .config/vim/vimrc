@@ -1,66 +1,123 @@
-" CTRL + P
-set runtimepath^=~/.config/vim/bundle/ctrlp.vim
+" Specify a directory for plugins
+call plug#begin()
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'tpope/vim-unimpaired'
+Plug 'neomake/neomake'
+" Initialize plugin system
+call plug#end()
 
-" designed for vim 8+
-" (see rwx.gg/vi for help)
-let skip_defaults_vim=1
-set nocompatible
-
-" activate line numbers
-set number
-
-" disable relative line numbers, remove no to sample it
-set norelativenumber
-
-" turn info in tray on even if default
-set ruler
-
+" When writing a buffer (no delay).
+call neomake#configure#automake('w')
 " tabs are the devil
 set expandtab
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
-set smartindent
-set smarttab
-set autoindent
-
-syntax on
 
 " more risky, but cleaner
 set nobackup
 set noswapfile
 set nowritebackup
+set hidden
+filetype plugin on
 
-" keep the terminal title updated
-set laststatus=0
-set icon
+"no gui
+set guioptions-=m  "remove menu bar
+set guioptions-=T  "remove toolbar
+set guioptions-=r  "remove right-hand scroll bar
+set guioptions-=L  "remove left-hand scroll bar
+set laststatus=2
+
+" set incsearch
+set incsearch
 
 "This unsets the "last search pattern" register by hitting return
 nnoremap <CR> :noh<CR><CR>
 
 " high contrast for streaming, etc.
+" colors for syntax check
+set termguicolors
 set background=dark
 colorscheme gruvbox
 
-" enable omni-completion
-"set omnifunc=syntaxcomplete#Complete
+" map leader key
+let mapleader = ","
 
-" pane switching vi style (duh)
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
+"To use `ALT+{h,j,k,l}` to navigate windows from any mode: >
+tnoremap <A-h> <C-\><C-N><C-w>h
+tnoremap <A-j> <C-\><C-N><C-w>j
+tnoremap <A-k> <C-\><C-N><C-w>k
+tnoremap <A-l> <C-\><C-N><C-w>l
+inoremap <A-h> <C-\><C-N><C-w>h
+inoremap <A-j> <C-\><C-N><C-w>j
+inoremap <A-k> <C-\><C-N><C-w>k
+inoremap <A-l> <C-\><C-N><C-w>l
+nnoremap <A-h> <C-w>h
+nnoremap <A-j> <C-w>j
+nnoremap <A-k> <C-w>k
+nnoremap <A-l> <C-w>l
 
-" functions keys
-map <F1> :w<CR>:!run <c-r>=expand('%:p')<CR><CR>
-map <F5> :0r !template <c-r>=expand('%:t')<CR><CR>
+" exit terminal mode with ESC
+tnoremap <Esc> <C-\><C-n>
 
-" disable arrow keys (vi muscle memory)
-noremap <up> :echoerr "Umm, use k instead"<CR>
-noremap <down> :echoerr "Umm, use j instead"<CR>
-noremap <left> :echoerr "Umm, use h instead"<CR>
-noremap <right> :echoerr "Umm, use l instead"<CR>
-inoremap <up> <NOP>
-inoremap <down> <NOP>
-inoremap <left> <NOP>
-inoremap <right> <NOP>
+" CtrlP plugin
+if executable('rg')
+    let g:ctrlp_user_command = 'rg --files --color=never'
+    let g:ctrlp_use_caching = 0
+    set grepprg=rg\ --vimgrep\ --no-heading
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+endif
+"  set only CWD for searching
+let g:ctrlp_working_path_mode = ''
+" Change mapping
+let g:ctrlp_map = '<Leader>p'
+" Open buffer with CtrlP
+nnoremap <Leader>b :CtrlPBuffer<CR>
+
+" shift + insert to paste
+map <silent> <S-Insert> "+p
+imap <silent> <S-Insert> <Esc>"+pa
+
+augroup Linting
+	au!
+	au BufWritePost *.c,*.cpp silent make! <afile> | silent redraw!
+	au QuickFixCmdPost [^l]* cwindow
+augroup END
+
+" grep into quickfix
+function! Grep(...)
+    return system(join([&grepprg] + [join(a:000, ' ')], ' '))
+endfunction
+command! -nargs=+ -bar Grep cgetexpr Grep(<f-args>)
+command! -nargs=+ -bar LGrep lgetexpr Grep(<f-args>)
+cnoreabbrev <expr> grep (getcmdtype() ==# ':' && getcmdline() ==# 'grep') ? 'Grep' : 'grep'
+
+" swap tjump key for global
+nnoremap <c-]> g<c-]>
+vnoremap <c-]> g<c-]>
+nnoremap g<c-]> <c-]>
+vnoremap g<c-]> <c-]>
+
+" status line
+set statusline=
+set statusline+=%#DiffAdd#%{(mode()=='n')?'\ \ NORMAL\ ':''}
+set statusline+=%#DiffChange#%{(mode()=='i')?'\ \ INSERT\ ':''}
+set statusline+=%#DiffDelete#%{(mode()=='r')?'\ \ RPLACE\ ':''}
+set statusline+=%#Cursor#%{(mode()=='v')?'\ \ VISUAL\ ':''}
+set statusline+=\ %n\           " buffer number
+set statusline+=%#Visual#       " colour
+set statusline+=%{&paste?'\ PASTE\ ':''}
+set statusline+=%{&spell?'\ SPELL\ ':''}
+set statusline+=%#CursorIM#     " colour
+set statusline+=%R                        " readonly flag
+set statusline+=%M                        " modified [+] flag
+set statusline+=%#Cursor#               " colour
+set statusline+=%#CursorLine#     " colour
+set statusline+=\ %t\                   " short file name
+set statusline+=%=                          " right align
+set statusline+=%#CursorLine#   " colour
+set statusline+=\ %Y\                   " file type
+set statusline+=%#CursorIM#     " colour
+set statusline+=\ %3l:%-2c\         " line + column
+set statusline+=%#Cursor#       " colour
+set statusline+=\ %3p%%\                " percentage
