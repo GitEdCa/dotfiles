@@ -1,21 +1,63 @@
-unbind-key M-Left
-unbind-key M-Right
-unbind-key M-Return
-bind-key CM-Return	alacritty
-bind-key CM-1		group-only-1
-bind-key CM-2		group-only-2
-bind-key CM-3		group-only-3
-bind-key CMS-0		window-movetogroup-0
-bind-key CMS-1		window-movetogroup-1
-bind-key CMS-2		window-movetogroup-2
-bind-key CMS-3		window-movetogroup-3
-bind-key M-t		window-maximize
-bind-key M-v		window-vtile
-bind-key M-s		window-htile
-bind-key CM-l		slock
+# remove all default keybindings
+unbind-key all
 
-bind-mouse M-2 window-lower
-bind-mouse M-3 window-resize
+bind-key 4-Return	xterm
+bind-key 4-1		group-only-1
+bind-key 4-2		group-only-2
+bind-key 4-3		group-only-3
+bind-key 4S-0		window-movetogroup-0
+bind-key 4S-1		window-movetogroup-1
+bind-key 4S-2		window-movetogroup-2
+bind-key 4S-3		window-movetogroup-3
+bind-key 4-t		window-maximize
+bind-key 4-v		window-vtile
+bind-key 4-s		window-htile
+bind-key 4-l		slock
+bind-key 4S-c		window-close
+
+
+# mod + shift + R = restart cwm, reloading configuration
+bind-key 4S-r restart
+# mod + shift + E = log out
+bind-key 4S-q quit
+
+# mod + / = show popup menu of current windows
+bind-key 4-slash menu-exec
+# mod + d = show popup menu to run a command (configured below)
+bind-key 4-d menu-cmd
+# mod + ? = show popup menu to run an arbitrary command
+
+bind-key 4-question menu-window
+
+# mod/alt + tab = cycle through current windows
+bind-key 4-Tab window-cycle
+bind-key M-Tab window-cycle
+# mod/alt + shift + tab = same thing in reverse
+bind-key 4S-Tab window-rcycle
+bind-key MS-Tab window-rcycle
+
+# unbind default mouse actions
+unbind-mouse M-1
+unbind-mouse CM-1
+unbind-mouse M-2
+unbind-mouse M-3
+unbind-mouse CMS-3
+
+# mod + left click drag = move window
+bind-mouse 4-1 window-move
+# mod + right click drag = resize window
+bind-mouse 4-3 window-resize
+# mod + middle click = lower window's focus
+bind-mouse 4-2 window-lower
+# mod + shift + middle click = hide window
+bind-mouse 4S-2 window-hide
+
+#bind-key XF86AudioLowerVolume "/bin/pactl set-sink-volume @DEFAULT_SINK@ -5%"
+#bind-key XF86AudioRaiseVolume "/bin/pactl set-sink-volume @DEFAULT_SINK@ +5%"
+#bind-key XF86AudioMute "/bin/pactl set-sink-mute @DEFAULT_SINK@ toggle"
+#
+#bind-key XF86MonBrightnessUp    "/bin/light -T 1.4"
+#bind-key XF86MonBrightnessDown  "/bin/light -T 0.72"
 
 #bind-key XF86AudioLowerVolume "/bin/pactl set-sink-volume @DEFAULT_SINK@ -5%"
 #bind-key XF86AudioRaiseVolume "/bin/pactl set-sink-volume @DEFAULT_SINK@ +5%"
