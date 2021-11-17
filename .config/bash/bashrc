@@ -1,12 +1,8 @@
 VISUAL=vi; export VISUAL
 EDITOR=vi; export EDITOR
 PAGER=/usr/bin/less; export PAGER
-[ -z "$TMUX" ]  && export TERM=xterm-256color
 
 export CDPATH=".:~" 
-
-# Activate vi mode
-set -o vi
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
@@ -36,19 +32,9 @@ esac
 # Prompt
 export PS1="[\u@\h \W]\$ "
 
-# some more ls aliases
-#alias ll='ls -l'
-#alias la='ls -A'
-#alias l='ls -CF'
-
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
-if [ -f ~/.config/bash/bash_aliases ]; then
-    . ~/.config/bash/bash_aliases
-fi
+# Aliases
+alias ls='ls -F'
+alias vim='vimx'
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
@@ -60,18 +46,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-#source "/home/elar/apps/cargo/env"
 
-# launching tmux by default
-if [[ "$TERM" != 'screen-256color' ]]; then 
-    tmux attach-session -t "$USER" || tmux new-session -s "$USER"
-fi
-
-# rust
-source "/home/elar/apps/rust/cargo/env"
-
-# fzf
-if [[ -d '/usr/share/doc/fzf' ]]; then
-    source /usr/share/doc/fzf/completion.bash
-    source /usr/share/doc/fzf/key-bindings.bash
-fi
+# FZF mappings and options
+[ -f /usr/share/fzf/shell/key-bindings.bash ] && source /usr/share/fzf/shell/key-bindings.bash

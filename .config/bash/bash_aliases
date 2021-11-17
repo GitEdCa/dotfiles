@@ -1,7 +1,0 @@
-alias xbi='doas xbps-install -S'
-alias xbu='doas xbps-install -Su'
-alias xbq='xbps-query -v -Rs'
-alias ls='ls -p'
-alias code='code-oss'
-alias vim=vim-x11
-alias activate='source env/bin/activate'

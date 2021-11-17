@@ -2,12 +2,9 @@
 call plug#begin()
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-unimpaired'
-Plug 'neomake/neomake'
 " Initialize plugin system
 call plug#end()
 
-" When writing a buffer (no delay).
-call neomake#configure#automake('w')
 " tabs are the devil
 set expandtab
 set tabstop=4
