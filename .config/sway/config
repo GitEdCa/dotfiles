@@ -6,10 +6,10 @@ set $right l
 # Logo key. Use Mod1 for Alt.
 set $mod Mod4
 # Your preferred terminal emulator
-set $term xterm
+set $term alacritty
 
 # set background
-output * bg /usr/local/share/backgrounds/sway/Sway_Wallpaper_Blue_1366x768.png fill
+output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1366x768.png fill
 
 ### Key bindings
 #
@@ -128,3 +128,9 @@ input keyboard xkb_model "pc86"
 
 # no show borders
 default_border pixel 2
+
+# lid laptop
+set $laptop LVDS-1
+bindswitch --reload --locked lid:on output $laptop disable
+bindswitch --reload --locked lid:off output $laptop enable
+exec_always ~/.local/bin/sway_lid.sh

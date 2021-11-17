@@ -1,32 +1,22 @@
 # Font configuration (changes require restart)
 font:
-  # The normal (roman) font face to use.
-  # Style can be specified to pick a specific face.
   normal:
-    family: Iosevka
-    style: Term
-    # family: "Fira Code"
-    # family: "Source Code Pro"
-    # style: Retina
+    family: monospace
+    style: Regular
 
-  # The bold font face
   bold:
-    family: Iosevka
-    style: Medium
-    # family: "Fira Code"
-    # family: "Source Code Pro"
+    family: monospace
+    style: Bold
 
-  # The italic font face
   italic:
-    family: Iosevka
-    style: "Light Italic"
-    # style: "Light Oblique"
-    # family: "Fira Code"
-    # family: "Source Code Pro"
-    # style: "Medium Italic"
+    family: monospace
+    style: Italic
 
-  # Point size of the font
-  size: 9.0
+  bold_italic:
+    family: monospace
+    style: Bold Italic
+
+  size: 9
 
 # adding padding
 window:
