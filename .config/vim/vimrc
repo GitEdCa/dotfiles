@@ -81,6 +81,11 @@ augroup Linting
 	au QuickFixCmdPost [^l]* cwindow
 augroup END
 
+" set make and hotkeys
+set makeprg=.\/build.sh " build is the current bash command to compile
+noremap <F9> :make<cr><cr>:botright cwindow<cr>
+noremap <buffer> <F10> :!.\/%:r<cr>
+
 " grep into quickfix
 function! Grep(...)
     return system(join([&grepprg] + [join(a:000, ' ')], ' '))
