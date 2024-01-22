@@ -1,6 +1,26 @@
 --
--- Set
+-- minpac
 --
+vim.cmd('packadd minpac')
+
+vim.fn['minpac#init']()
+local Plug = vim.fn['minpac#add']
+-- minpac must have {'type': 'opt'} so that it can be loaded with `packadd`.
+Plug('k-takata/minpac', {type = 'opt'})
+Plug('aktersnurra/no-clown-fiesta.nvim')
+Plug('echasnovski/mini.nvim')
+Plug('nvim-lua/plenary.nvim')
+--Plug('nvim-telescope/telescope.nvim', { ['tag'] = '0.1.5' })
+Plug('nvim-treesitter/nvim-treesitter')
+--Plug('weilbith/nvim-floating-tag-preview')
+--Plug('tpope/vim-fugitive')
+Plug('justinmk/vim-dirvish')
+Plug('neovim/nvim-lspconfig')
+--Plug('tpope/vim-dispatch')
+--Plug('radenling/vim-dispatch-neovim')
+Plug('ThePrimeagen/harpoon', {branch = "harpoon2"})
+Plug('junegunn/fzf')
+
 vim.opt.guicursor = ""
 vim.opt.nu = true
 vim.opt.rnu = true
@@ -8,33 +28,29 @@ vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.smartindent = true
-vim.opt.wrap = false
+vim.opt.wrap = true
 vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.undodir = os.getenv("HOME") .. "/.config/nvim/undodir"
 vim.opt.undofile = true
-vim.opt.hlsearch = false
-vim.opt.incsearch = true
+--vim.opt.hlsearch = true
+--vim.opt.incsearch = true
 vim.opt.termguicolors = true
-vim.opt.scrolloff = 8
+vim.opt.scrolloff = 5
 vim.opt.signcolumn = "yes"
-vim.opt.isfname:append("@-@")
-vim.opt.updatetime = 50
+--vim.opt.isfname:append("@-@")
 vim.opt.colorcolumn = "80"
-vim.cmd.colorscheme('rose-pine') --theme
+vim.cmd[[colorscheme no-clown-fiesta]] -- theme
 
 --
--- Global Remapping
+-- Mappings
 --
 vim.g.mapleader = " "
--- open netrw
-vim.keymap.set("n", "<leader>ex", vim.cmd.Ex)
 -- copy and paste to system clipboard
-vim.keymap.set("n", "<leader>y", "\"+y")
-vim.keymap.set("v", "<leader>y", "\"+y")
-vim.keymap.set("n", "<leader>Y", "\"+Y")
-vim.keymap.set("n", "<leader>p", "\"+p")
-vim.keymap.set("n", "<leader>P", "\"+P")
+vim.keymap.set({"n", "v"}, "gy", "\"+y")
+vim.keymap.set({"n", "v"}, "gY", "\"+Y")
+vim.keymap.set("n", "gp", "\"+p")
+vim.keymap.set("n", "gP", "\"+P")
 -- n and N always the same direction
 local expr = {silent = true, expr = true, remap = false}
 vim.keymap.set("n", "n", "'Nn'[v:searchforward]", expr)
@@ -43,102 +59,64 @@ vim.keymap.set("n", "N", "'nN'[v:searchforward]", expr)
 vim.keymap.set("n", "cn", "*``cgn")
 --indent recent pasted code
 vim.keymap.set("n", "<leader>=", "`[v`]=")
-
 -- apply formatter
-vim.keymap.set("n", "<F10>", ":%!clang-format<CR>")
+vim.keymap.set("n", "<F10>", ":%!clang-format<CR>2g;")
 -- run make
 vim.keymap.set("n", "<F9>", ":w<CR> :Make<CR>")
+-- alt keys for swaping buffers
+vim.keymap.set({"t","n"}, "<A-1>", "<C-\\><C-n>:1wincmd w<CR>", {silent = true})
+vim.keymap.set({"t","n"}, "<A-2>", "<C-\\><C-n>:2wincmd w<CR>", {silent = true})
+vim.keymap.set({"t","n"}, "<A-3>", "<C-\\><C-n>:3wincmd w<CR>", {silent = true})
+-- esc in Terminal mode to return in normal mode
+vim.keymap.set('t', '<Esc>', "<C-\\><C-n>", {})
+vim.keymap.set('n', '<leader>t', ":term<CR>", {})
+-- flying buffer switching
+vim.keymap.set('n', '<leader>b', ":ls<CR>:b<Space>", {})
+-- save file and return normal mode
+vim.keymap.set({"n", 'i'}, '<C-s>', "<Esc>:w<Cr>", {})
+-- change last buffer
+vim.keymap.set('n', '<BS>', ":b#<CR>", {})
 
---
--- terminal mode
---
-local api = vim.api
-api.nvim_command("autocmd TermOpen * startinsert")             -- starts in insert mode
-api.nvim_command("autocmd TermOpen * setlocal nonumber nornu") -- no numbers
-api.nvim_command("autocmd TermEnter * setlocal signcolumn=no") -- no sign column
-vim.keymap.set('t', '<esc>', "<C-\\><C-n>")                    -- esc to exit insert mode
-vim.keymap.set("n", "<leader>t", ":vsplit term://zsh<CR>")     -- split terminal
 
---
--- autocmds
---
---api.nvim_command("autocmd BufEnter * vertical res+40") -- focus buffer
-
+-- autocomplete
+vim.opt.completeopt = "menu,menuone,noselect"
+vim.keymap.set('i', '<Tab>',   [[pumvisible() ? "\<C-n>" : "\<Tab>"]],   { expr = true })
+vim.keymap.set('i', '<S-Tab>', [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
 
 --
 -- Plugins
 --
-
---
--- Fugitive
---
-vim.keymap.set("n", "<leader>gs", vim.cmd.Git);
+require('mini.completion').setup()
+require('mini.bracketed').setup()
+--require('mini.comment').setup()
+require('mini.pairs').setup()
+require('mini.sessions').setup({
+	directory = vim.fn.stdpath("config") .. "/sessions"
+})
+require('mini.starter').setup()
 
 --
 -- Telescope
 --
-local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>f', builtin.find_files, {})
-vim.keymap.set('n', '<leader>g', builtin.git_files, {})
-vim.keymap.set('n', '<leader>r', function()
-	builtin.grep_string({ search = vim.fn.input("Grep > ") });
-end)
+--local builtin = require('telescope.builtin')
+--vim.keymap.set('n', '<leader>f', builtin.find_files, {})
+--vim.keymap.set('n', '<leader>g', builtin.git_files, {})
+--vim.keymap.set('n', '<leader>b', builtin.buffers, {})
+--vim.keymap.set('n', '<leader>r', function()
+--	builtin.grep_string({ search = vim.fn.input("Grep > ") });
+--end)
 
 --
--- Lsp
+-- FZF
 --
-local lsp_zero = require('lsp-zero')
-lsp_zero.on_attach(function(client, bufnr)
-  local opts = {buffer = bufnr, remap = false}
-  vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
-  vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
-  vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
-  vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
-  vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
-  vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
-  vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
-  vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
-  vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
-  vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
-  --lsp_zero.default_keymaps({buffer = bufnr})
-end)
-lsp_zero.set_preferences({
-    suggest_lsp_servers = false,
-    sign_icons = {
-        error = 'E',
-        warn = 'W',
-        hint = 'H',
-        info = 'I'
-    }
-})
-
-local cmp = require('cmp')
-local cmp_select  = {behavior = cmp.SelectBehavior.Select}
-cmp.setup({
-	sources = {
-		{name = 'path'},
-		{name = 'nvim_lsp'},
-		{name = 'nvim_lua'},
-		{name = 'luasnip', keyword_length = 2},
-		{name = 'buffer', keyword_length = 3},
-	},
-	formatting = lsp_zero.cmp_format(),
-	mapping = cmp.mapping.preset.insert({
-		--['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-		--['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-		--['<C-y>'] = cmp.mapping.confirm({ select = true }),
-		--['<C-Space>'] = cmp.mapping.complete(),
-	}),
-})
--- here you can setup the language servers 
-require('lspconfig').clangd.setup({})
+vim.keymap.set('n', '<leader>f', ":FZF<CR>", {})
 
 --
 -- Treesitter
---
+-- 
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all" (the five listed parsers should always be installed)
-  ensure_installed = { "c", "lua", "vim", "vimdoc" },
+  ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "cpp", "html", "rust" },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
@@ -147,8 +125,28 @@ require'nvim-treesitter.configs'.setup {
   -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
   auto_install = true,
 
+  -- List of parsers to ignore installing (or "all")
+  ignore_install = { "javascript" },
+
+  ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
+  -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
+
   highlight = {
     enable = true,
+
+    -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
+    -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
+    -- the name of the parser)
+    -- list of language that will be disabled
+    --disable = { "c", "rust" },
+    -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
+    disable = function(lang, buf)
+        local max_filesize = 100 * 1024 -- 100 KB
+        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+        if ok and stats and stats.size > max_filesize then
+            return true
+        end
+    end,
 
     -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
@@ -159,6 +157,22 @@ require'nvim-treesitter.configs'.setup {
 }
 
 --
--- UndoTree
+-- lspconfig
 --
-vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
+require'lspconfig'.clangd.setup{}
+
+--
+-- Harpoon
+--
+local harpoon = require("harpoon")
+harpoon.setup()
+vim.keymap.set("n", "<leader>m", function() harpoon:list():append() end)
+vim.keymap.set("n", "<leader>h", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+
+vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end)
+vim.keymap.set("n", "<C-j>", function() harpoon:list():select(2) end)
+vim.keymap.set("n", "<C-k>", function() harpoon:list():select(3) end)
+
+-- Toggle previous & next buffers stored within Harpoon list
+vim.keymap.set("n", "<C-S-P>", function() harpoon:list():prev() end)
+vim.keymap.set("n", "<C-S-N>", function() harpoon:list():next() end)
