@@ -17,6 +17,7 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
 
 	"aktersnurra/no-clown-fiesta.nvim",
+	"rose-pine/neovim",
 	{
 		'numToStr/FTerm.nvim',
 		keys = {
@@ -29,32 +30,8 @@ require("lazy").setup({
 		'echasnovski/mini.nvim',
 		event = "VeryLazy",
 		config = function()
-			require('mini.completion').setup()
 			require('mini.bracketed').setup()
 			require('mini.pairs').setup()
-			require('mini.files').setup()
-
-
-			vim.keymap.set('i', '<Tab>',   [[pumvisible() ? "\<C-n>" : "\<Tab>"]],   { expr = true })
-			vim.keymap.set('i', '<S-Tab>', [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], { expr = true })
-
-			local keys = {
-				['cr']        = vim.api.nvim_replace_termcodes('<CR>', true, true, true),
-				['ctrl-y_cr'] = vim.api.nvim_replace_termcodes('<C-y><CR>', true, true, true),
-			}
-
-			_G.cr_action = function()
-				if vim.fn.pumvisible() ~= 0 then
-					-- If popup is visible, confirm selected item or add new line otherwise
-					local item_selected = vim.fn.complete_info()['selected'] ~= -1
-					return keys['ctrl-y_cr']
-				else
-					-- If popup is not visible, use plain `<CR>`. You might want to customize
-					-- according to other plugins. For example, to use 'mini.pairs', replace
-					-- next line with `return require('mini.pairs').cr()`
-					return keys['cr']
-				end
-			end
 		end,
 	},
 
@@ -74,27 +51,20 @@ require("lazy").setup({
 		dependencies = {
 			'junegunn/fzf.vim'
 		},
-		--vim.g['fzf_action'] = {['ctrl-s'] = 'split', ['ctrl-v'] = 'vsplit'}
-		--vim.g['fzf_layout'] = {window = {width = 0.8, height = 0.8}}
-		--vim.g['fzf_preview_window'] = {'up:50%:+{2}-/2', 'ctrl-/'}
 		keys = {
 			{ '<leader>o', '<cmd>Tags<CR>' },
 			{ '<leader>;', '<cmd>History:<CR>' },
+			{ '<C-p>', '<cmd>GFiles<CR>' },
 			{ '<leader>f', '<cmd>Files<CR>' },
 			{ '<leader>r', '<cmd>Rg<CR>' },
 			{ '<leader>b', '<cmd>Buffers<CR>' },
 		},
 	},
 	{
-		"neovim/nvim-lspconfig",
-		event = { "BufReadPre", "BufNewFile" },
-		config = function()
-			local nvim_lsp = require("lspconfig")
-			nvim_lsp.clangd.setup{}
-		end,
-	},
-	{
 		'nvim-treesitter/nvim-treesitter',
+		dependencies = {
+			'nvim-treesitter/nvim-treesitter-context'
+		},
 		build = ":TSUpdate",
 		event = "VeryLazy",
 		config = function () 
@@ -112,10 +82,131 @@ require("lazy").setup({
 	{
 		'saccarosium/neomarks',
 		keys = {
-			{ '<leader>m', '<cmd>lua require("neomarks").mark_file()<CR>' },
-			{ '<leader>m', '<cmd>lua require("neomarks").menu_toggle()<CR>' },
+			{ '<leader>a', '<cmd>lua require("neomarks").mark_file()<CR>' },
+			{ '<C-e>', '<cmd>lua require("neomarks").menu_toggle()<CR>' },
 		},
-	}
+	},
+	{
+		'VonHeikemen/lsp-zero.nvim',
+		branch = 'v3.x',
+		lazy = true,
+		config = false,
+		init = function()
+			-- Disable automatic setup, we are doing it manually
+			vim.g.lsp_zero_extend_cmp = 0
+			vim.g.lsp_zero_extend_lspconfig = 0
+		end,
+	},
+	{
+		'williamboman/mason.nvim',
+		lazy = false,
+		config = true,
+	},
+
+	-- Autocompletion
+	{
+		'hrsh7th/nvim-cmp',
+		event = 'InsertEnter',
+		dependencies = {
+			{'L3MON4D3/LuaSnip'},
+			{'hrsh7th/cmp-buffer'},
+			{'hrsh7th/cmp-path'},
+		},
+		config = function()
+			-- Here is where you configure the autocompletion settings.
+			local lsp_zero = require('lsp-zero')
+			lsp_zero.extend_cmp()
+
+			-- And you can configure cmp even more, if you want to.
+			local cmp = require('cmp')
+			local cmp_action = lsp_zero.cmp_action()
+
+			local luasnip = require('luasnip')
+
+			local has_words_before = function()
+				unpack = unpack or table.unpack
+				local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+				return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+			end
+
+			cmp.setup({
+				sources = {
+					{name = 'path'},
+					{name = 'nvim_lsp'},
+					{name = 'luasnip', keyword_length = 2},
+					{name = 'buffer', keyword_length = 3},
+				},
+				formatting = lsp_zero.cmp_format({details = true}),
+				mapping = cmp.mapping.preset.insert({
+					['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+					['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+					['<C-y>'] = cmp.mapping.confirm({ select = true }),
+					['<C-Space>'] = cmp.mapping.complete(),
+					["<Tab>"] = cmp.mapping(function(fallback)
+						if cmp.visible() then
+							--cmp.select_next_item()
+							cmp.confirm({select = true})
+								-- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable() 
+								-- that way you will only jump inside the snippet region
+						elseif luasnip.expand_or_jumpable() then
+							luasnip.expand_or_jump()
+						elseif has_words_before() then
+							cmp.complete()
+						else
+							fallback()
+						end
+						end, { "i", "s" }),
+					["<S-Tab>"] = cmp.mapping(function(fallback)
+					if cmp.visible() then
+						cmp.select_prev_item()
+						elseif luasnip.jumpable(-1) then
+							luasnip.jump(-1)
+						else
+							fallback()
+						end
+						end, { "i", "s" }),
+
+				}),
+			})
+		end,
+	},
+
+	-- LSP
+	{
+		'neovim/nvim-lspconfig',
+		cmd = {'LspInfo', 'LspInstall', 'LspStart'},
+		event = {'BufReadPre', 'BufNewFile'},
+		dependencies = {
+			{'hrsh7th/cmp-nvim-lsp'},
+			{'williamboman/mason-lspconfig.nvim'},
+		},
+		config = function()
+			-- This is where all the LSP shenanigans will live
+			local lsp_zero = require('lsp-zero')
+			lsp_zero.extend_lspconfig()
+
+			--- if you want to know more about lsp-zero and mason.nvim
+			--- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guides/integrate-with-mason-nvim.md
+			lsp_zero.on_attach(function(client, bufnr)
+				-- see :help lsp-zero-keybindings
+				-- to learn the available actions
+				lsp_zero.default_keymaps({buffer = bufnr})
+			end)
+			require('lspconfig').clangd.setup({})
+
+			require('mason-lspconfig').setup({
+				ensure_installed = {},
+				handlers = {
+					lsp_zero.default_setup,
+					lua_ls = function()
+						-- (Optional) Configure lua language server for neovim
+						local lua_opts = lsp_zero.nvim_lua_ls()
+						require('lspconfig').lua_ls.setup(lua_opts)
+					end,
+				}
+			})
+		end
+	},
 })
 
 vim.opt.guicursor = ""
@@ -134,7 +225,8 @@ vim.opt.termguicolors = true
 vim.opt.scrolloff = 5
 vim.opt.signcolumn = "yes"
 vim.opt.colorcolumn = "80"
-vim.cmd[[colorscheme no-clown-fiesta]] -- theme
+--vim.cmd[[colorscheme no-clown-fiesta]] -- theme
+vim.cmd("colorscheme rose-pine") -- theme
 
 --
 -- linting
@@ -178,3 +270,5 @@ vim.keymap.set('n', '<BS>', ":b#<CR>", {})
 vim.keymap.set('n', '<C-f>', "q:", {})
 --Clear higlighting
 vim.keymap.set('n', '\\', ":nohl<CR>", {})
+-- Open explorer
+vim.keymap.set('n', '<leader>e', ":Vex<CR>", {})
