@@ -1,10 +1,10 @@
 # remove all default keybindings
 unbind-key all
 
-bind-key 4-Return	xterm
-bind-key 4-1		group-only-1
-bind-key 4-2		group-only-2
-bind-key 4-3		group-only-3
+bind-key 4-Return	alacritty
+#bind-key 4-1		group-only-1
+#bind-key 4-2		group-only-2
+#bind-key 4-3		group-only-3
 bind-key 4S-0		window-movetogroup-0
 bind-key 4S-1		window-movetogroup-1
 bind-key 4S-2		window-movetogroup-2
@@ -13,7 +13,16 @@ bind-key 4-t		window-maximize
 bind-key 4-v		window-vtile
 bind-key 4-s		window-htile
 bind-key 4-l		slock
-bind-key 4S-c		window-close
+bind-key 4-q		window-close
+
+## Fkeys
+bind-key  F2  group-only-1
+bind-key  F3  group-only-2
+bind-key  F4  window-close
+bind-key  F5  window-cycle-ingroup
+bind-key  F6  window-maximize
+bind-key  F7  window-vtile
+bind-key  F8  window-close
 
 
 # mod + shift + R = restart cwm, reloading configuration
@@ -24,17 +33,17 @@ bind-key 4S-q quit
 # mod + / = show popup menu of current windows
 bind-key 4-slash menu-exec
 # mod + d = show popup menu to run a command (configured below)
-bind-key 4-d menu-cmd
+#bind-key 4-d menu-cmd
 # mod + ? = show popup menu to run an arbitrary command
 
 bind-key 4-question menu-window
 
 # mod/alt + tab = cycle through current windows
-bind-key 4-Tab window-cycle
-bind-key M-Tab window-cycle
+bind-key 4-Tab window-cycle-ingroup
+bind-key M-Tab window-cycle-ingroup
 # mod/alt + shift + tab = same thing in reverse
-bind-key 4S-Tab window-rcycle
-bind-key MS-Tab window-rcycle
+bind-key 4S-Tab window-rcycle-ingroup
+bind-key MS-Tab window-rcycle-ingroup
 
 # unbind default mouse actions
 unbind-mouse M-1
@@ -77,3 +86,6 @@ sticky			yes
 #command firefox		"/bin/firefox"
 #command alacritty	"/bin/alacritty"
 #command office		"/bin/libreoffice"
+
+
+#bind-key F2 /usr/bin/firefox-esr

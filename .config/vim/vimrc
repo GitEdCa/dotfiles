@@ -1,125 +1,65 @@
-" Specify a directory for plugins
-call plug#begin()
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'tpope/vim-unimpaired'
-" Initialize plugin system
-call plug#end()
-
-" tabs are the devil
-set expandtab
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
-
-" more risky, but cleaner
+set nocompatible
+" automatically indent new lines
+set autoindent
+set noflash
+" use case when searching
+set noignorecase
+" automatically write files when changing when multiple files open
+set autowrite
+" deactivate line numbers
+set nonumber
+" turn col and row position on in bottom right
+set ruler " see ruf for formatting
+" show command and insert mode
+set showmode
+set smartindent
+set smarttab
 set nobackup
 set noswapfile
 set nowritebackup
-set hidden
-filetype plugin on
-
-"no gui
-set guioptions-=m  "remove menu bar
-set guioptions-=T  "remove toolbar
-set guioptions-=r  "remove right-hand scroll bar
-set guioptions-=L  "remove left-hand scroll bar
-set laststatus=2
-
-" set incsearch
+" highlight search hits
+set hlsearch
 set incsearch
+set linebreak
+" stop complaints about switching buffer with changes
+set hidden
+nnoremap <Esc> :noh<CR>
+" set colorscheme
+set bg=dark
+colorscheme molokai
+"colorscheme gruvbox8
+"leader
+let mapleader = " "
+" fuzzy finder and Rg
+nnoremap <leader>f :Files<CR>
+nnoremap <leader><leader> :GFiles<CR>
+nnoremap <leader>g :Rg<CR>
 
-"This unsets the "last search pattern" register by hitting return
-nnoremap <CR> :noh<CR><CR>
 
-" high contrast for streaming, etc.
-" colors for syntax check
-set termguicolors
-set background=dark
-colorscheme gruvbox
-
-" map leader key
-let mapleader = ","
-
-"To use `ALT+{h,j,k,l}` to navigate windows from any mode: >
-tnoremap <A-h> <C-\><C-N><C-w>h
-tnoremap <A-j> <C-\><C-N><C-w>j
-tnoremap <A-k> <C-\><C-N><C-w>k
-tnoremap <A-l> <C-\><C-N><C-w>l
-inoremap <A-h> <C-\><C-N><C-w>h
-inoremap <A-j> <C-\><C-N><C-w>j
-inoremap <A-k> <C-\><C-N><C-w>k
-inoremap <A-l> <C-\><C-N><C-w>l
-nnoremap <A-h> <C-w>h
-nnoremap <A-j> <C-w>j
-nnoremap <A-k> <C-w>k
-nnoremap <A-l> <C-w>l
-
-" exit terminal mode with ESC
-tnoremap <Esc> <C-\><C-n>
-
-" CtrlP plugin
-if executable('rg')
-    let g:ctrlp_user_command = 'rg --files --color=never'
-    let g:ctrlp_use_caching = 0
-    set grepprg=rg\ --vimgrep\ --no-heading
-    set grepformat=%f:%l:%c:%m,%f:%l:%m
-endif
-"  set only CWD for searching
-let g:ctrlp_working_path_mode = ''
-" Change mapping
-let g:ctrlp_map = '<Leader>p'
-" Open buffer with CtrlP
-nnoremap <Leader>b :CtrlPBuffer<CR>
-
-" shift + insert to paste
-map <silent> <S-Insert> "+p
-imap <silent> <S-Insert> <Esc>"+pa
-
-augroup Linting
-	au!
-	au BufWritePost *.c,*.cpp silent make! <afile> | silent redraw!
-	au QuickFixCmdPost [^l]* cwindow
-augroup END
-
-" set make and hotkeys
-set makeprg=.\/build.sh " build is the current bash command to compile
-noremap <F9> :make<cr><cr>:botright cwindow<cr>
-noremap <buffer> <F10> :!.\/%:r<cr>
-
-" grep into quickfix
-function! Grep(...)
-    return system(join([&grepprg] + [join(a:000, ' ')], ' '))
+"" LSP settings
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> gs <plug>(lsp-document-symbol-search)
+    nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+    nmap <buffer> gr <plug>(lsp-references)
+    nmap <buffer> gi <plug>(lsp-implementation)
+    nmap <buffer> gt <plug>(lsp-type-definition)
+    nmap <buffer> <leader>rn <plug>(lsp-rename)
+    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+    nmap <buffer> K <plug>(lsp-hover)
+    nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
+    nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
+    let g:lsp_format_sync_timeout = 1000
+    autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+    
+    " refer to doc to add more commands
 endfunction
-command! -nargs=+ -bar Grep cgetexpr Grep(<f-args>)
-command! -nargs=+ -bar LGrep lgetexpr Grep(<f-args>)
-cnoreabbrev <expr> grep (getcmdtype() ==# ':' && getcmdline() ==# 'grep') ? 'Grep' : 'grep'
-
-" swap tjump key for global
-nnoremap <c-]> g<c-]>
-vnoremap <c-]> g<c-]>
-nnoremap g<c-]> <c-]>
-vnoremap g<c-]> <c-]>
-
-" status line
-set statusline=
-set statusline+=%#DiffAdd#%{(mode()=='n')?'\ \ NORMAL\ ':''}
-set statusline+=%#DiffChange#%{(mode()=='i')?'\ \ INSERT\ ':''}
-set statusline+=%#DiffDelete#%{(mode()=='r')?'\ \ RPLACE\ ':''}
-set statusline+=%#Cursor#%{(mode()=='v')?'\ \ VISUAL\ ':''}
-set statusline+=\ %n\           " buffer number
-set statusline+=%#Visual#       " colour
-set statusline+=%{&paste?'\ PASTE\ ':''}
-set statusline+=%{&spell?'\ SPELL\ ':''}
-set statusline+=%#CursorIM#     " colour
-set statusline+=%R                        " readonly flag
-set statusline+=%M                        " modified [+] flag
-set statusline+=%#Cursor#               " colour
-set statusline+=%#CursorLine#     " colour
-set statusline+=\ %t\                   " short file name
-set statusline+=%=                          " right align
-set statusline+=%#CursorLine#   " colour
-set statusline+=\ %Y\                   " file type
-set statusline+=%#CursorIM#     " colour
-set statusline+=\ %3l:%-2c\         " line + column
-set statusline+=%#Cursor#       " colour
-set statusline+=\ %3p%%\                " percentage
+augroup lsp_install
+    au!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
