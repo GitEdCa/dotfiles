@@ -16,6 +16,9 @@ if not vim.loop.fs_stat(mini_path) then
 end
 
 -- [[ options ]]
+-- colorscheme
+vim.opt.termguicolors = true
+vim.cmd[[colorscheme minicyan]]
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -34,36 +37,41 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set({'n', 'v'}, '<leader>y', '"+y')
 vim.keymap.set('n', '<leader>p', '"+p')
 vim.keymap.set('n', '<leader>P', '"+P')
-
 -- hotkeys quickfix
 vim.keymap.set('n', '[q', '<cmd>cprev<CR>zz')
 vim.keymap.set('n', ']q', '<cmd>cnext<CR>zz')
-
-vim.opt.termguicolors = true
-
--- find files & live_grep
-vim.keymap.set('n', '<leader>pf', function() MiniPick.builtin.files() end)
-vim.keymap.set('n', '<C-p>', function() MiniPick.builtin.git() end)
-vim.keymap.set('n', '<leader>pg', function() MiniPick.builtin.grep_live() end)
-vim.keymap.set('n', '<leader>sh', function() MiniPick.builtin.help() end)
-vim.keymap.set('n', '<leader>ds', function() MiniExtra.pickers.lsp({scope = 'document_symbol'}) end)
-vim.keymap.set('n', '<leader>ps', function() MiniExtra.pickers.lsp({scope = 'workspace_symbol'}) end)
+-- hotkeys fly to arg buffers
+vim.keymap.set('n', '<leader>aa1', '<cmd>0arga % | argdedupe<CR>')
+vim.keymap.set('n', '<leader>aa2', '<cmd>1arga % | argdedupe<CR>')
+vim.keymap.set('n', '<leader>aa3', '<cmd>2arga % | argdedupe<CR>')
+vim.keymap.set('n', '<leader>as', '<cmd>args<CR>')
+vim.keymap.set('n', '<leader>ad1', '<cmd>1argd<CR>')
+vim.keymap.set('n', '<leader>ad2', '<cmd>2argd<CR>')
+vim.keymap.set('n', '<leader>ad3', '<cmd>3argd<CR>')
+vim.keymap.set('n', '<leader>a1', '<cmd>argu 1<CR>zz')
+vim.keymap.set('n', '<leader>a2', '<cmd>argu 2<CR>zz')
+vim.keymap.set('n', '<leader>a3', '<cmd>argu 3<CR>zz')
 
 -- [[ plugins ]]
 -- Set up 'mini.deps' (customize to your liking)
 require('mini.deps').setup({ path = { package = path_package } })
 require('mini.clue').setup()
 require('mini.completion').setup()
+-- mini.pick
 require('mini.pick').setup({mappings = { choose_marked = '<C-q>', mark_all = '<C-e>'}})
+vim.keymap.set('n', '<leader>sf', function() MiniPick.builtin.files() end)
+vim.keymap.set('n', '<leader>st', function() MiniPick.builtin.git() end)
+vim.keymap.set('n', '<leader>sg', function() MiniPick.builtin.grep_live() end)
+vim.keymap.set('n', '<leader>sh', function() MiniPick.builtin.help() end)
+vim.keymap.set('n', '<leader>sd', function() MiniExtra.pickers.lsp({scope = 'document_symbol'}) end)
+vim.keymap.set('n', '<leader>sw', function() MiniExtra.pickers.lsp({scope = 'workspace_symbol'}) end)
+
 require('mini.statusline').setup()
 require('mini.extra').setup()
 
 MiniDeps.add({
   source = 'neovim/nvim-lspconfig',
-  -- Supply dependencies near target plugin
-  depends = { 'williamboman/mason.nvim' },
 })
-
 
 local lspconfig = require('lspconfig')
 lspconfig.clangd.setup {}
@@ -84,33 +92,18 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
     vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('i', '<C-h>', vim.lsp.buf.signature_help, opts)
-    --vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, opts)
+    vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
+    vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, opts)
     vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
-    vim.keymap.set({ 'n', 'v' }, '<space>dca', vim.lsp.buf.code_action, opts)
+    vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
     vim.keymap.set("n", "[d", vim.diagnostic.goto_next, opts)
     vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, opts)
-    vim.keymap.set('n', '<leader>df', function()
+    vim.keymap.set('n', '<leader>dF', function()
       vim.lsp.buf.format { async = true }
     end, opts)
   end,
 })
-
-MiniDeps.add({
-  source = 'lifepillar/vim-gruvbox8',
-})
---vim.cmd [[colorscheme gruvbox8]]
-
-MiniDeps.add({
-  source = 'aktersnurra/no-clown-fiesta.nvim',
-
-})
-vim.cmd [[colorscheme no-clown-fiesta]]
-
-MiniDeps.add({
-  source = 'folke/tokyonight.nvim',
-})
---vim.cmd [[colorscheme tokyonight]]
 
 -- Asyncdo
 MiniDeps.add({
