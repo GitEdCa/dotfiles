@@ -1,10 +1,21 @@
-(setq inhibit-startup-screen t)
 (setq backup-directory-alist
       `(("." . "~/.emacs.d/backups"))
       auto-save-file-name-transforms
       `((".*" "~/.emacs.d/auto-save-list/" t)))
 
-(load-theme 'gruber-darker)
+;; Zoom
+(set-face-attribute 'default nil :height 120)
+
+;; Save History
+(savehist-mode +1)
+(setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
+
+;; Startup
+(setq inhibit-startup-screen t)
+(setq initial-scratch-message
+      ";; Hello world.\n")
+
+(load-theme 'gruber-darker t)
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -13,6 +24,25 @@
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
+;;; multiple cursors
+(use-package multiple-cursors
+  :ensure t
+  :config
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C->")         'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<")         'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<")     'mc/mark-all-like-this)
+  (global-set-key (kbd "C-\"")        'mc/skip-to-next-like-this)
+  (global-set-key (kbd "C-:")         'mc/skip-to-previous-like-this))
+
+;; move-text
+(use-package move-text
+  :ensure t
+  :config
+  (global-set-key (kbd "M-p") 'move-text-up)
+  (global-set-key (kbd "M-n") 'move-text-down))
+
+;; company
 (use-package company
   :ensure t
   :hook (emacs-lisp-mode . company-tng-mode)
@@ -61,23 +91,13 @@
 
 ;; ido
 (ido-mode 1)
+(setq ido-enable-flex-matching t)
 (ido-everywhere 1)
 (ido-ubiquitous-mode 1)
 (require 'ido-completing-read+)
 (ido-ubiquitous-mode 1)
-
-(require 'icomplete)
+(
+require 'icomplete)
 (icomplete-mode 1)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("e13beeb34b932f309fb2c360a04a460821ca99fe58f69e65557d6c1b10ba18c7" default)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+
