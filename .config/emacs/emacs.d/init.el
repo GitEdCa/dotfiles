@@ -3,6 +3,10 @@
       auto-save-file-name-transforms
       `((".*" "~/.emacs.d/auto-save-list/" t)))
 
+(setq custom-file "~/.emacs.d/custom.el")
+;; Prevent undo tree files from polluting your git repo
+(setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+
 ;; Zoom
 (set-face-attribute 'default nil :height 120)
 
@@ -24,7 +28,26 @@
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
-;;; multiple cursors
+;; evil mode
+(use-package evil
+  :ensure t
+  :config
+  (evil-mode t)
+  (setq evil-disable-insert-state-bindings 't))
+
+(use-package undo-tree
+  :ensure t
+  :after evil
+  :diminish
+  :config
+  (evil-set-undo-system 'undo-tree)
+  (global-undo-tree-mode 1))
+
+;; magit
+(use-package magit
+  :ensure t)
+
+;; multiple cursors
 (use-package multiple-cursors
   :ensure t
   :config
@@ -96,8 +119,22 @@
 (ido-ubiquitous-mode 1)
 (require 'ido-completing-read+)
 (ido-ubiquitous-mode 1)
-(
-require 'icomplete)
+
+;; smx
+(use-package amx
+  :ensure t
+  :config (amx-mode 1))
+
+;; buffer autocomplete
+(require 'icomplete)
 (icomplete-mode 1)
 
+;; Recent files
+(recentf-mode 1)
+(global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
+;; UTF-8
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
+(set-keyboard-coding-system 'utf-8-unix)
+(set-terminal-coding-system 'utf-8-unix)
