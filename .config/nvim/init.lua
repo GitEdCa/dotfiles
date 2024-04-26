@@ -85,6 +85,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
 
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'tpope/vim-fugitive', -- Detect tabstop and shiftwidth automatically
 
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -192,15 +193,7 @@ require('lazy').setup({
           italic = false,
         },
       })
-      --vim.cmd("colorscheme rose-pine")
-    end
-  },
-
-  {
-    "thimc/gruber-darker.nvim",
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme("gruber-darker")
+      vim.cmd("colorscheme rose-pine")
     end
   },
 
@@ -538,7 +531,6 @@ require('lazy').setup({
       vim.keymap.set('t', '<leader>t', '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>')
 
       local fterm = require("FTerm")
-
       local gitui = fterm:new({
         ft = 'fterm_gitui', -- You can also override the default filetype, if you want
         cmd = "gitui",
