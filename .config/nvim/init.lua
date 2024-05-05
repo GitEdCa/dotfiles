@@ -214,6 +214,7 @@ require('lazy').setup({
       --require('mini.completion').setup()
       require('mini.comment').setup()
       require('mini.files').setup()
+      require('mini.notify').setup()
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -243,52 +244,16 @@ require('lazy').setup({
       require('nvim-treesitter.configs').setup(opts)
     end,
   },
-  
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
       { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
       'williamboman/mason-lspconfig.nvim',
-      { 'j-hui/fidget.nvim', opts = {} },
     },
     config = function()
-      -- Brief aside: **What is LSP?**
-      --
-      -- LSP is an initialism you've probably heard, but might not understand what it is.
-      --
-      -- LSP stands for Language Server Protocol. It's a protocol that helps editors
-      -- and language tooling communicate in a standardized fashion.
-      --
-      -- In general, you have a "server" which is some tool built to understand a particular
-      -- language (such as `gopls`, `lua_ls`, `rust_analyzer`, etc.). These Language Servers
-      -- (sometimes called LSP servers, but that's kind of like ATM Machine) are standalone
-      -- processes that communicate with some "client" - in this case, Neovim!
-      --
-      -- LSP provides Neovim with features like:
-      --  - Go to definition
-      --  - Find references
-      --  - Autocompletion
-      --  - Symbol Search
-      --  - and more!
-      --
-      -- Thus, Language Servers are external tools that must be installed separately from
-      -- Neovim. This is where `mason` and related plugins come into play.
-      --
-      -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
-      -- and elegantly composed help section, `:help lsp-vs-treesitter`
-
-      --  This function gets run when an LSP attaches to a particular buffer.
-      --    That is to say, every time a new file is opened that is associated with
-      --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
-      --    function will be executed to configure the current buffer
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
-          -- NOTE: Remember that Lua is a real programming language, and as such it is possible
-          -- to define small helper and utility functions so you don't have to repeat yourself.
-          --
-          -- In this case, we create a function that lets us more easily define mappings specific
-          -- for LSP related items. It sets the mode, buffer and description for us each time.
           local map = function(keys, func, desc)
             vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
@@ -360,8 +325,8 @@ require('lazy').setup({
       --  By default, Neovim doesn't support everything that is in the LSP specification.
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
-      --local capabilities = vim.lsp.protocol.make_client_capabilities()
-      --capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+      capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -375,39 +340,28 @@ require('lazy').setup({
       
       require('mason').setup()
       require("mason-lspconfig").setup()
-      require("mason-lspconfig").setup_handlers {
-        function(server_name) -- default handler (optional)
-          require("lspconfig")[server_name].setup {}
-        end,
-        ["lua_ls"] = function()
-          require("lspconfig").lua_ls.setup({
-            settings = {Lua = {diagnostics = {globals = {'vim'}}}}
-          })
-        end
+
+      local servers = {
+        clangd = {capabilities = capabilities},
+        lua_ls = {
+          settings = {
+            Lua = {
+              completion = {
+                callSnippet = 'Replace',
+              },
+              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
+              -- diagnostics = { disable = { 'missing-fields' } },
+            },
+          },
+          capabilities = capabilities,
+        },
       }
-      --local servers = {
-      --  clangd = {},
-      --  lua_ls = {
-      --    settings = {
-      --      Lua = {
-      --        completion = {
-      --          callSnippet = 'Replace',
-      --        },
-      --        -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-      --        -- diagnostics = { disable = { 'missing-fields' } },
-      --      },
-      --    },
-      --  },
-      --}
-      --for server, settings in pairs(servers) do
-      --  require('lspconfig')[server].setup(settings)
-      --end
-      require('lspconfig').clangd.setup {}
+      for server, settings in pairs(servers) do
+        require('lspconfig')[server].setup(settings)
+      end
     end,
   },
-
-
-{ -- Autocompletion
+  { -- Autocompletion
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
     dependencies = {
@@ -436,8 +390,9 @@ require('lazy').setup({
         },
       },
       'saadparwaiz1/cmp_luasnip',
+      'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
-      'hrsh7th/cmp-buffer',
+
     },
     config = function()
       -- See `:help cmp`
@@ -502,7 +457,7 @@ require('lazy').setup({
         sources = {
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
-          { name = 'buffer' },
+          { name = 'path' },
         },
       }
     end,
@@ -519,78 +474,9 @@ require('lazy').setup({
     'habamax/vim-asciidoctor',
   },
 
-  {
-    "ThePrimeagen/harpoon",
-    branch = "harpoon2",
-    keys = {
-      { "<leader>M", nil, desc ="Add mark to Harpoon" },
-      { "<leader>m", nil, desc ="Toggle Harpoon marks window" },
-      { "<C-1>", nil, mode = {'n', 't'}, desc ="Got to mark 1" },
-      { "<C-2>", nil, mode = {'n', 't'}, desc ="Got to mark 2" },
-      { "<C-3>", nil, mode = {'n', 't'}, desc ="Got to mark 3" },
-    },
-    dependencies = { "nvim-lua/plenary.nvim" },
-    config = function() 
-      local harpoon = require('harpoon')
-      harpoon:setup()
-
-      vim.keymap.set('n',"<leader>M", function() harpoon:list():add() end)
-      vim.keymap.set('n',"<leader>m", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
-      vim.keymap.set({'n', 't'}, "<C-j>", function() harpoon:list():select(1) end)
-      vim.keymap.set({'n', 't'}, "<C-k>", function() harpoon:list():select(2) end)
-      vim.keymap.set({'n', 't'}, "<C-l>", function() harpoon:list():select(3) end)
-    end,
-  },
-
-  {
-    "rcarriga/nvim-dap-ui",
-	dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"},
-    opts = {},
-    config = function(_, opts)
-      require("dapui").setup()
-      local dap, dapui = require("dap"), require("dapui")
-      dap.listeners.before.attach.dapui_config = function()
-        dapui.open()
-      end
-      dap.listeners.before.launch.dapui_config = function()
-        dapui.open()
-      end
-      dap.listeners.before.event_terminated.dapui_config = function()
-        dapui.close()
-      end
-      dap.listeners.before.event_exited.dapui_config = function()
-        dapui.close()
-      end
-
-      dap.adapters.gdb = {
-        type = "executable",
-        command = "gdb",
-        args = { "-i", "dap" }
-      }
-      dap.configurations.c = {
-        {
-          name = "Launch",
-          type = "gdb",
-          request = "launch",
-          program = function()
-            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-          end,
-          cwd = "${workspaceFolder}",
-          stopAtBeginningOfMainSubprogram = false,
-        },
-      }
-
-      vim.keymap.set('n', '<F5>', function() require('dap').continue() end)
-      vim.keymap.set('n', '<S-F5>', function() require('dap').terminate() end)
-      vim.keymap.set('n', '<F6>', function() require('dap').step_over() end)
-      vim.keymap.set('n', '<F7>', function() require('dap').step_into() end)
-      vim.keymap.set('n', '<S-F7>', function() require('dap').step_out() end)
-      vim.keymap.set('n', '<F8>', function() require('dap').toggle_breakpoint() end)
-      vim.keymap.set('n', '<S-F8>', function() require('dap').repl.open() end)
-      vim.keymap.set('n', '<S-F6>', function() require('dap').run_last() end)
-
-    end,
+  { "mg979/vim-visual-multi",
   }
+
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the

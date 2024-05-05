@@ -16,7 +16,7 @@
       ";; Hello world.\n")
 
 ;; Zoom
-(set-face-attribute 'default nil :height 120)
+(set-face-attribute 'default nil :height 110)
 
 ;; Save History
 (savehist-mode +1)
@@ -29,12 +29,23 @@
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
+;; magit
+(use-package magit
+  :ensure t)
+
+(use-package expand-region
+  :ensure t
+  :bind (("C-=" . er/expand-region)
+	     ("C--" . er/contract-region)))
+
 ;; evil mode
 (use-package evil
   :ensure t
+  :init
+  (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
+  (setq evil-want-keybinding nil)
   :config
-  (evil-mode t)
-  (setq evil-disable-insert-state-bindings 't))
+  (evil-mode t))
 
 (use-package undo-tree
   :ensure t
@@ -44,74 +55,22 @@
   (evil-set-undo-system 'undo-tree)
   (global-undo-tree-mode 1))
 
-;; magit
-(use-package magit
-  :ensure t)
+;;(use-package multiple-cursors
+;;  :ensure t)
 
-;; multiple cursors
-(use-package multiple-cursors
+(use-package evil-mc
   :ensure t
+  :after evil
   :config
-  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-  (global-set-key (kbd "C->")         'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<")         'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C-<")     'mc/mark-all-like-this)
-  (global-set-key (kbd "C-\"")        'mc/skip-to-next-like-this)
-  (global-set-key (kbd "C-:")         'mc/skip-to-previous-like-this))
+  (global-evil-mc-mode  1)
+  (progn
+    (evil-define-key 'normal evil-mc-key-map (kbd "<escape>") 'evil-mc-undo-all-cursors)))
 
-;; move-text
-(use-package move-text
+(use-package evil-collection
   :ensure t
+  :after evil
   :config
-  (global-set-key (kbd "M-p") 'move-text-up)
-  (global-set-key (kbd "M-n") 'move-text-down))
-
-;; company
-(use-package company
-  :ensure t
-  :hook (emacs-lisp-mode . company-tng-mode)
-  :config
-  (setq company-idle-delay 0.5
-	company-minimum-prefix-length 2))
-
-(use-package eglot
-  :ensure t
-  :demand t
-  :bind (:map eglot-mode-map
-	      ("<f6>" . eglot-format-buffer)
-	      ("C-c a" . eglot-code-actions)
-	      ("C-c d" . eldoc)
-	      ("C-c r" . eglot-rename))
-  :config
-  (setq eglot-ignored-server-capabilities '(:inlayHintProvider)))
-
-(use-package c-ts-mode
-  :ensure t
-  :after (eglot)
-  :hook ((c-ts-mode . eglot-ensure)
-	 (c-ts-mode . company-tng-mode)
-	 (c-ts-mode . (lambda ()
-			(eglot-inlay-hints-mode -1))))
-  :config
-  (add-to-list 'eglot-server-programs '(c-ts-mode . ("clangd"
-						     "--header-insertion=never"))))
-
-(add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
-
-;; disable all bars
-;;(tool-bar-mode -1)
-;;(menu-bar-mode -1)
-;;(scroll-bar-mode -1)
-
-;; pretend like I have winum
-;;(global-set-key (kbd "M-1") 'other-window)
-;;(global-set-key (kbd "M-2") 'other-window)
-(setq gdb-many-windows t) ; set gdb-many-windows on gdb automatically
-
-(use-package expand-region
-  :ensure t
-  :bind (("C-=" . er/expand-region)
-	 ("C--" . er/contract-region)))
+  (evil-collection-init))
 
 (use-package vertico
   :ensure t
@@ -122,10 +81,10 @@
   :config
   (vertico-mode))
 
-(use-package hotfuzz
-  :ensure t
-  :init
-  (setq completion-styles '(hotfuzz)))
+;;(use-package hotfuzz
+;;  :ensure t
+;;  :init
+;;  (setq completion-styles '(hotfuzz)))
 
 ;; UTF-8
 (set-language-environment "UTF-8")
@@ -133,13 +92,19 @@
 (set-keyboard-coding-system 'utf-8-unix)
 (set-terminal-coding-system 'utf-8-unix)
 
-(use-package nord-theme
+(use-package kuronami-theme
   :ensure t
   :config
-  (load-theme 'nord t))
-
+  (load-theme 'kuronami t))
 
 (use-package rainbow-mode
   :ensure t)
 
 ;; dired
+(setq dired-dwim-target t)
+
+;; editor config
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
