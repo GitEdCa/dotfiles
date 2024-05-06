@@ -45,7 +45,9 @@
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
   :config
+  (setq evil-insert-state-cursor 'box)
   (evil-mode t))
+
 
 (use-package undo-tree
   :ensure t
@@ -108,3 +110,12 @@
   :ensure t
   :config
   (editorconfig-mode 1))
+
+(use-package emacs
+  :config
+  (blink-cursor-mode 0))
+
+(use-package org-zettelkasten
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook #'org-zettelkasten-mode))
