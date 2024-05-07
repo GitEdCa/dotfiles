@@ -46,6 +46,7 @@
   (setq evil-want-keybinding nil)
   :config
   (setq evil-insert-state-cursor 'box)
+  (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
   (evil-mode t))
 
 
@@ -83,10 +84,10 @@
   :config
   (vertico-mode))
 
-;;(use-package hotfuzz
-;;  :ensure t
-;;  :init
-;;  (setq completion-styles '(hotfuzz)))
+(use-package hotfuzz
+  :ensure t
+  :init
+  (setq completion-styles '(hotfuzz)))
 
 ;; UTF-8
 (set-language-environment "UTF-8")
