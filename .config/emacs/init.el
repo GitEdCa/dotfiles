@@ -38,42 +38,45 @@
   :bind (("C-=" . er/expand-region)
 	     ("C--" . er/contract-region)))
 
-;; evil mode
-(use-package evil
+;; multicursors
+(use-package multiple-cursors
   :ensure t
-  :init
-  (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
-  (setq evil-want-keybinding nil)
   :config
-  (setq evil-insert-state-cursor 'box)
-  (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-  (evil-mode t))
-
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
 
 (use-package undo-tree
   :ensure t
-  :after evil
+;;  :after evil
   :diminish
   :config
-  (evil-set-undo-system 'undo-tree)
+;;  (evil-set-undo-system 'undo-tree)
   (global-undo-tree-mode 1))
 
-;;(use-package multiple-cursors
-;;  :ensure t)
+;; evil mode
+;;(use-package evil
+;;  :ensure t
+;;  :init
+;;  (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
+;;  (setq evil-want-keybinding nil)
+;;  :config
+;;  (setq evil-insert-state-cursor 'box)
+;;  (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+;;  (evil-mode t))
 
-(use-package evil-mc
-  :ensure t
-  :after evil
-  :config
-  (global-evil-mc-mode  1)
-  (progn
-    (evil-define-key 'normal evil-mc-key-map (kbd "<escape>") 'evil-mc-undo-all-cursors)))
+;;(use-package evil-mc
+;;  :ensure t
+;;  :after evil
+;;  :config
+;;  (global-evil-mc-mode  1))
 
-(use-package evil-collection
-  :ensure t
-  :after evil
-  :config
-  (evil-collection-init))
+;;(use-package evil-collection
+;;  :ensure t
+;;  :after evil
+;;  :config
+;;  (evil-collection-init)
+;;  (evil-define-key 'normal evil-mc-key-map (kbd "<escape>") 'evil-mc-undo-all-cursors))
 
 (use-package vertico
   :ensure t
@@ -95,10 +98,10 @@
 (set-keyboard-coding-system 'utf-8-unix)
 (set-terminal-coding-system 'utf-8-unix)
 
-(use-package kuronami-theme
+(use-package gruber-darker-theme
   :ensure t
   :config
-  (load-theme 'kuronami t))
+  (load-theme 'gruber-darker t))
 
 (use-package rainbow-mode
   :ensure t)
@@ -114,9 +117,20 @@
 
 (use-package emacs
   :config
-  (blink-cursor-mode 0))
+  (blink-cursor-mode 0)
+  ;; mappings
+  (global-set-key (kbd "M-p") 'backward-paragraph)
+  (global-set-key (kbd "M-n") 'forward-paragraph)
+  (delete-selection-mode 1))
 
 (use-package org-zettelkasten
   :ensure t
   :config
   (add-hook 'org-mode-hook #'org-zettelkasten-mode))
+
+(use-package treesit-auto
+  :ensure t
+  :init
+  :config
+  (setq treesit-auto-langs '(rust c cpp))
+  (global-treesit-auto-mode))
