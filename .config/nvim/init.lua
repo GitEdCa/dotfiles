@@ -19,8 +19,9 @@ vim.opt.updatetime = 250
 -- Configure how new splits should be opened
 vim.opt.splitright = true
 vim.opt.splitbelow = true
---vim.opt.list = true
---vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+-- Sets how neovim will display certain whitespace characters in the editor.-
+vim.opt.list = true
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
 -- Show which line your cursor is on
@@ -33,7 +34,7 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- copy/paste system clipboard
 vim.keymap.set('n', '<leader>y', '"+y', {desc = 'copy to system clipboard'})
 vim.keymap.set('n', '<leader>p', '"+p', {desc = 'paste from system clipboard'})
-vim.keymap.set('n', '<leader>p', '"+P', {desc = 'paste from system clipboard'})
+vim.keymap.set('n', '<leader>P', '"+P', {desc = 'paste from system clipboard'})
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
@@ -44,20 +45,8 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 vim.keymap.set('n', '<leader>v', '<cmd>:e $MYVIMRC<CR>', { desc = "Open VIMRC"})
 
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
---
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
--- [[ Basic Autocommands ]]
---  See `:help lua-guide-autocommands`
-
--- Highlight when yanking (copying) text
---  Try it with `yap` in normal mode
---  See `:help vim.highlight.on_yank()`
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
@@ -119,81 +108,38 @@ require('lazy').setup({
     end,
   },
 
-  { -- Fuzzy Finder (files, lsp, etc)
-    'nvim-telescope/telescope.nvim',
+  {
+    "ibhagwan/fzf-lua",
     event = 'VimEnter',
-    branch = '0.1.x',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-
+    opts = {
+      winopts = {
+        on_create = function()
+          vim.api.nvim_buf_set_keymap(0, "t", "<Esc>", "<Esc>", { noremap = true })
+        end,
+      },
     },
-    config = function()
-      require('telescope').setup {
-        extensions = {
-          ['ui-select'] = {
-            require('telescope.themes').get_dropdown(),
-          },
-        },
-      }
-      local builtin = require 'telescope.builtin'
-      vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = 'Search Files' })
+    config = function(_, opts)
+      local builtin = require 'fzf-lua'
+      vim.keymap.set('n', '<leader>f', builtin.files, { desc = 'Search Files' })
       vim.keymap.set('n', '<leader>,', builtin.builtin, { desc = 'Search Select Telescope' })
-      vim.keymap.set('n', '<leader>d', builtin.diagnostics, { desc = 'Search Diagnostics' })
+      --vim.keymap.set('n', '<leader>d', builtin.diagnostics, { desc = 'Search Diagnostics' })
       vim.keymap.set('n', '<leader>z', builtin.resume, { desc = 'Search Resume' })
       vim.keymap.set('n', '<leader>.', builtin.oldfiles, { desc = 'Search Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader>b', builtin.buffers, { desc = 'Find existing buffers' })
-      vim.keymap.set('n', '<leader>h', builtin.help_tags, { desc = 'Search Help' })
+      vim.keymap.set('n', '<leader>h', builtin.helptags, { desc = 'Search Help' })
+      vim.keymap.set('n', '<leader>G', builtin.live_grep, { desc = 'Live Grep' })
+      vim.keymap.set('n', '<leader>g', builtin.grep, { desc = 'Grep' })
+      vim.keymap.set('n', '<leader>\\', builtin.lines, { desc = 'Buffers lines' })
+      vim.keymap.set('n', '<leader>/', builtin.blines, { desc = 'Current Buffer lines' })
 
-      vim.keymap.set('n', '<leader>g', function()
-            local word = vim.fn.expand("<cword>")
-            builtin.grep_string({ search = word })
-        end)
-
-      -- Slightly advanced example of overriding default behavior and theme
-      vim.keymap.set('n', '<leader>/', function()
-        -- You can pass additional configuration to Telescope to change the theme, layout, etc.
-        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-          winblend = 10,
-          previewer = false,
-        })
-      end, { desc = '[/] Fuzzily search in current buffer' })
-
-      -- It's also possible to pass additional configuration options.
-      --  See `:help telescope.builtin.live_grep()` for information about particular keys
-      --vim.keymap.set('n', '<leader>s/', function()
-      --  builtin.live_grep {
-      --    grep_open_files = true,
-      --    prompt_title = 'Live Grep in Open Files',
-      --  }
-      --end, { desc = '[S]earch [/] in Open Files' })
-
-      -- Shortcut for searching your Neovim configuration files
-      vim.keymap.set('n', '<leader>*', function()
-        builtin.find_files { cwd = vim.fn.stdpath 'config' }
-      end, { desc = '[S]earch [N]eovim files' })
     end,
   },
 
   { -- You can easily change to a different colorscheme.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      --vim.cmd.colorscheme 'tokyonight-night'
-      -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
-    end,
-  },
-
-  {
-    "rose-pine/neovim",
+    'catppuccin/nvim',
     priority = 1000,
     config = function()
-      require('rose-pine').setup({
-        styles = {
-          italic = false,
-        },
-      })
-      vim.cmd("colorscheme rose-pine")
+      vim.cmd("colorscheme catppuccin")
     end
   },
 
@@ -214,6 +160,7 @@ require('lazy').setup({
       --require('mini.completion').setup()
       require('mini.comment').setup()
       require('mini.files').setup()
+      vim.keymap.set('n', '<leader>-', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end, {desc = 'Open Mini Files'})
       require('mini.notify').setup()
 
       -- ... and there is more!
@@ -225,25 +172,28 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'rust', 'javascript', 'typescript' },
       -- Autoinstall languages that are not installed
       auto_install = false,
       highlight = {
         enable = true,
       },
-      indent = { enable = true, disable = { 'ruby' } },
+      indent = { enable = true },
       enable = true,
-      keymaps = {
-        init_selection = '<CR>',
-        node_incremental = '<CR>',
-        node_decremental = '<S-CR>'
-      }
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          node_incremental = "v",
+          node_decremental = "V",
+        },
+      },
     },
     config = function(_, opts)
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup(opts)
     end,
   },
+
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -261,27 +211,27 @@ require('lazy').setup({
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+          map('gd', function() vim.lsp.buf.definition() end, '[G]oto [D]efinition')
 
           -- Find references for the word under your cursor.
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          map('gr',function() vim.lsp.buf.references() end , '[G]oto [R]eferences')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+          map('gI', require('fzf-lua').lsp_implementations, '[G]oto [I]mplementation')
 
           -- Jump to the type of the word under your cursor.
           --  Useful when you're not sure what type a variable is and you want to see
           --  the definition of its *type*, not where it was *defined*.
-          map('gD', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
+          map('gD', require('fzf-lua').lsp_typedefs, 'Type [D]efinition')
 
           -- Fuzzy find all the symbols in your current document.
           --  Symbols are things like variables, functions, types, etc.
-          map('<leader>s', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
+          map('<leader>s', require('fzf-lua').lsp_document_symbols, '[D]ocument [S]ymbols')
 
           -- Fuzzy find all the symbols in your current workspace.
           --  Similar to document symbols, except searches over your entire project.
-          map('<leader>S', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
+          map('<leader>S', require('fzf-lua').lsp_workspace_symbols, '[W]orkspace [S]ymbols')
 
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
@@ -361,6 +311,7 @@ require('lazy').setup({
       end
     end,
   },
+
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
@@ -381,18 +332,18 @@ require('lazy').setup({
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
       },
       'saadparwaiz1/cmp_luasnip',
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
-
+      'hrsh7th/cmp-buffer',
     },
     config = function()
       -- See `:help cmp`
@@ -406,58 +357,82 @@ require('lazy').setup({
             luasnip.lsp_expand(args.body)
           end,
         },
-        completion = { completeopt = 'menu,menuone,noinsert' },
+        -- completion = { completeopt = 'menu,menuone,noinsert' },
 
         -- For an understanding of why these mappings were
         -- chosen, you will need to read `:help ins-completion`
         --
         -- No, but seriously. Please read `:help ins-completion`, it is really good!
-        mapping = cmp.mapping.preset.insert {
-          -- Select the [n]ext item
-          ['<C-n>'] = cmp.mapping.select_next_item(),
-          -- Select the [p]revious item
-          ['<C-p>'] = cmp.mapping.select_prev_item(),
+        -- mapping = cmp.mapping.preset.insert {
+        --   -- Select the [n]ext item
+        --   ['<C-n>'] = cmp.mapping.select_next_item(),
+        --   -- Select the [p]revious item
+        --   ['<C-p>'] = cmp.mapping.select_prev_item(),
+        --
+        --   -- Scroll the documentation window [b]ack / [f]orward
+        --   ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+        --   ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        --
+        --   -- Accept ([y]es) the completion.
+        --   --  This will auto-import if your LSP supports it.
+        --   --  This will expand snippets if the LSP sent a snippet.
+        --   ['<C-y>'] = cmp.mapping.confirm { select = true },
+        --
+        --   -- Manually trigger a completion from nvim-cmp.
+        --   --  Generally you don't need this, because nvim-cmp will display
+        --   --  completions whenever it has completion options available.
+        --   ['<C-Space>'] = cmp.mapping.complete {},
+        --
+        --   -- Think of <c-l> as moving to the right of your snippet expansion.
+        --   --  So if you have a snippet that's like:
+        --   --  function $name($args)
+        --   --    $body
+        --   --  end
+        --   --
+        --   -- <c-l> will move you to the right of each of the expansion locations.
+        --   -- <c-h> is similar, except moving you backwards.
+        --   ['<C-l>'] = cmp.mapping(function()
+        --     if luasnip.expand_or_locally_jumpable() then
+        --       luasnip.expand_or_jump()
+        --     end
+        --   end, { 'i', 's' }),
+        --   ['<C-h>'] = cmp.mapping(function()
+        --     if luasnip.locally_jumpable(-1) then
+        --       luasnip.jump(-1)
+        --     end
+        --   end, { 'i', 's' }),
+        --
+        --   -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
+        --   --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
+        -- },
 
-          -- Scroll the documentation window [b]ack / [f]orward
-          ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-f>'] = cmp.mapping.scroll_docs(4),
-
-          -- Accept ([y]es) the completion.
-          --  This will auto-import if your LSP supports it.
-          --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
-
-          -- Manually trigger a completion from nvim-cmp.
-          --  Generally you don't need this, because nvim-cmp will display
-          --  completions whenever it has completion options available.
-          ['<C-Space>'] = cmp.mapping.complete {},
-
-          -- Think of <c-l> as moving to the right of your snippet expansion.
-          --  So if you have a snippet that's like:
-          --  function $name($args)
-          --    $body
-          --  end
-          --
-          -- <c-l> will move you to the right of each of the expansion locations.
-          -- <c-h> is similar, except moving you backwards.
-          ['<C-l>'] = cmp.mapping(function()
-            if luasnip.expand_or_locally_jumpable() then
-              luasnip.expand_or_jump()
+        mapping = {
+          ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            elseif luasnip.locally_jumpable(1) then
+              luasnip.jump(1)
+            else
+              fallback()
             end
-          end, { 'i', 's' }),
-          ['<C-h>'] = cmp.mapping(function()
-            if luasnip.locally_jumpable(-1) then
+          end, { "i", "s" }),
+
+          ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            elseif luasnip.locally_jumpable(-1) then
               luasnip.jump(-1)
+            else
+              fallback()
             end
-          end, { 'i', 's' }),
+          end, { "i", "s" }),
 
-          -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
-          --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
         },
         sources = {
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
+          { name = 'buffer' },
         },
       }
     end,
@@ -475,7 +450,13 @@ require('lazy').setup({
   },
 
   { "mg979/vim-visual-multi",
-  }
+  },
+
+  {
+    'kevinhwang91/nvim-bqf',
+    ft = 'qf'
+  },
+
 
 }, {
   ui = {
