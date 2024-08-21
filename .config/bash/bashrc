@@ -14,7 +14,7 @@ HISTFILE=~/.config/bash/bash_history
 HISTFILESIZE=2000
 
 # Prompt
-export PS1="[\u@\h \W]\$ "
+export PS1="\033[38;5;209m\]┌──[\033[38;5;141m\]\t \u\033[38;5;209m\]:\033[38;5;105m\]\h\033[38;5;231m\] \w\033[38;5;209m\]]\n\033[38;5;209m\]└─\\[\033[38;5;209m\]$\[\033[37m\] "
 
 # Aliases
 alias ls='ls --color -F'

@@ -1,3 +1,5 @@
+export HISTSIZE=65536
+
 export LC_ALL=en_US.UTF-8
 # set PATH so it includes user's private bin if it exists
 if [ -d ~/.local/bin ] ; then
