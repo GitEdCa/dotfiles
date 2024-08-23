@@ -59,6 +59,7 @@ vim.keymap.set('t', '<C-h>', '<C-\\><C-n><C-w><C-h>', { desc = 'Move focus to th
 vim.keymap.set('t', '<C-l>', '<C-\\><C-n><C-w><C-l>', { desc = 'Move focus to the right window for terminals' })
 vim.keymap.set('t', '<C-j>', '<C-\\><C-n><C-w><C-j>', { desc = 'Move focus to the lower window for terminals' })
 vim.keymap.set('t', '<C-k>', '<C-\\><C-n><C-w><C-k>', { desc = 'Move focus to the upper window for terminals' })
+vim.keymap.set('t', '<C-^>', '<C-\\><C-n><C-6>', { desc = 'Focus to the last buffer' })
 -- escape hotkeys
 vim.keymap.set("i", "jj", "<Esc>", { noremap = true, desc = "Escape to normal mode"})
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
@@ -407,9 +408,6 @@ require('lazy').setup({
 		},
 		{
 				'jpalardy/vim-slime',
-				-- keys = {
-				-- 		{ '<C-c><C-c>', '<Plug>SlimeParagraphSend', desc = 'Vim-slime' }
-				-- },
 				init = function()
 						vim.g.slime_target = 'neovim'
 				end,
