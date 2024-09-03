@@ -1,9 +1,12 @@
 -- [[ Setting options ]]
 vim.g.mapleader = ' '
 vim.opt.mouse = 'a'
+-- copy to system clipboard by default
 vim.schedule(function()
 	vim.opt.clipboard = 'unnamedplus'
 end)
+-- enable icons
+vim.g.have_nerd_font = true
 -- Enable break indent
 vim.opt.breakindent    = true
 -- Save undo history
@@ -59,6 +62,8 @@ vim.keymap.set({ 'x', 'n', 'i' }, '<C-s>', '<Esc><cmd>up<CR><ESC>')
 vim.keymap.set('n', 'Y', 'y$')
 -- auto format just pasted text
 vim.keymap.set({ 'n', 'x' }, '<leader>=', "'[=']")
+-- ; for commands
+vim.keymap.set("n", ";", ":")
 
 -- [[ Basic Autocommands ]]
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -98,14 +103,35 @@ require('lazy').setup({
 		cmd = 'Git',
 	},
 
-	{          --schema
-		'Mofiqul/dracula.nvim',
-		priority = 1000, -- Make sure to load this before all the other start plugins.
+	 { -- Adds git related signs to the gutter, as well as utilities for managing changes
+    'lewis6991/gitsigns.nvim',
+		opts = {
+			signs = {
+				add = { text = '+' },
+				change = { text = '~' },
+				delete = { text = '_' },
+				topdelete = { text = '‾' },
+				changedelete = { text = '~' },
+			},
+		},
+	},
+
+	{ "catppuccin/nvim",
+		name = "catppuccin",
+		priority = 1000,
 		init = function()
-			vim.cmd.colorscheme('dracula')
-			vim.cmd.hi 'Comment gui=none'
+			vim.cmd.colorscheme('catppuccin')
 		end,
 	},
+	-- {          --schema
+	-- 	'Mofiqul/dracula.nvim',
+	-- 	priority = 1000, -- Make sure to load this before all the other start plugins.
+	-- 	init = function()
+	-- 		vim.cmd.colorscheme('dracula')
+	-- 		vim.cmd.hi 'Comment gui=none'
+	-- 	end,
+	-- },
+
 
 	{ --lsp
 		"neovim/nvim-lspconfig",
@@ -148,7 +174,16 @@ require('lazy').setup({
 						}
 					}
 				},
-				rust_analyzer = {},
+				rust_analyzer = {
+					filetypes = {"rust"},
+					settings = {
+						['rust-analyzer'] = {
+							cargo = {
+								allFeatures = true,
+							},
+						},
+					},
+				},
 				clangd = {},
 				pyright = {},
 			}
@@ -189,16 +224,17 @@ require('lazy').setup({
 				end,
 			})
 
-			local cmp_select = { behavior = cmp.SelectBehavior.Select }
 			local luasnip = require 'luasnip'
 			luasnip.config.setup {}
 
+			vim.o.completeopt = "menuone,noselect,preview"
 			cmp.setup({
 				snippet = {
 					expand = function(args)
 						require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
 					end,
 				},
+				preselect = cmp.PreselectMode.None,
 				mapping = cmp.mapping.preset.insert({
 					["<C-Space>"] = cmp.mapping.complete(),
 					["<CR>"] = cmp.mapping({
@@ -209,8 +245,9 @@ require('lazy').setup({
 								fallback()
 							end
 						end,
-						s = cmp.mapping.confirm({ select = true }),
+						s = cmp.mapping.confirm({ select = false }),
 						c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
+
 					}),
 					['<Tab>'] = cmp.mapping.select_next_item(),
 					['<S-Tab>'] = cmp.mapping.select_prev_item(),
@@ -326,12 +363,17 @@ require('lazy').setup({
 			require('mini.pairs').setup {}
 			require('mini.bracketed').setup {}
 			require('mini.surround').setup()
+			require('mini.files').setup()
 			local statusline = require 'mini.statusline'
-			statusline.setup { use_icons = false }
+			statusline.setup { use_icons = vim.g.have_nerd_font }
 			---@diagnostic disable-next-line: duplicate-set-field
 			statusline.section_location = function()
 				return '%2l:%-2v'
 			end
+			-- keymaps mini plugins
+			vim.keymap.set('n', '<leader>e', function() MiniFiles.open() end)
+			vim.keymap.set('n', '<leader>E', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end)
+
 		end,
 	},
 
@@ -340,5 +382,79 @@ require('lazy').setup({
 		keys = {
 			{ '<leader>u', vim.cmd.UndotreeToggle }
 		},
+	},
+
+	{ -- dap
+		'mfussenegger/nvim-dap',
+		dependencies = {
+			'rcarriga/nvim-dap-ui',
+			'nvim-neotest/nvim-nio',
+			'williamboman/mason.nvim',
+		},
+		keys = function(_, keys)
+			local dap = require 'dap'
+			local dapui = require 'dapui'
+			return {
+				-- Basic debugging keymaps, feel free to change to your liking!
+				{ '<F5>', dap.continue, desc = 'Debug: Start/Continue' },
+				{ '<F6>', dap.step_into, desc = 'Debug: Step Into' },
+				{ '<F7>', dap.step_out, desc = 'Debug: Step Out' },
+				{ '<F8>', dap.step_over, desc = 'Debug: Step Over' },
+				{ '<F9>', dap.toggle_breakpoint, desc = 'Debug: Toggle Breakpoint' },
+				{
+					'<S-F9>',
+					function()
+						dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
+					end,
+					desc = 'Debug: Set Breakpoint',
+				},
+				-- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
+				{ '<S-F5>', dapui.toggle, desc = 'Debug: See last session result.' },
+				unpack(keys),
+			}
+		end,
+		config = function()
+			local dap = require 'dap'
+			local dapui = require 'dapui'
+
+			dapui.setup {
+				icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
+				controls = {
+					icons = {
+						pause = '⏸',
+						play = '▶',
+						step_into = '⏎',
+						step_over = '⏭',
+						step_out = '⏮',
+						step_back = 'b',
+						run_last = '▶▶',
+						terminate = '⏹',
+						disconnect = '⏏',
+					},
+				},
+			}
+			dap.listeners.after.event_initialized['dapui_config'] = dapui.open
+			dap.listeners.before.event_terminated['dapui_config'] = dapui.close
+			dap.listeners.before.event_exited['dapui_config'] = dapui.close
+
+			-- rust config
+			dap.adapters.gdb = {
+				type = "executable",
+				command = "rust-gdb",
+				args = { "--interpreter=dap", "--eval-command", "set print pretty on" }
+			}
+			dap.configurations.rust = {
+				{
+					name = "Launch",
+					type = "gdb",
+					request = "launch",
+					program = function()
+						return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+					end,
+					cwd = "${workspaceFolder}",
+					stopAtBeginningOfMainSubprogram = false,
+				},
+			}
+		end,
 	}
 })
