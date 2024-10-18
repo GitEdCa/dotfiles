@@ -1,65 +1,178 @@
+vim9script
+
 set nocompatible
-" automatically indent new lines
-set autoindent
-set noflash
-" use case when searching
-set noignorecase
-" automatically write files when changing when multiple files open
-set autowrite
-" deactivate line numbers
-set nonumber
-" turn col and row position on in bottom right
-set ruler " see ruf for formatting
-" show command and insert mode
-set showmode
+
+call plug#begin()
+# List your plugins here
+Plug 'tpope/vim-fugitive'
+#Plug 'dense-analysis/ale'
+Plug 'maxbrunsfeld/vim-yankstack'
+Plug 'girishji/scope.vim'
+Plug 'habamax/vim-dir'
+Plug 'habamax/vim-shout'
+Plug 'yegappan/lsp'
+Plug 'girishji/vimcomplete'
+
+call plug#end()
+packadd comment
+
+# allow to open buffers withotu saving
+set hidden
+# Enable break indent
+set breakindent
+# Save undo history
+set undofile
+# Case-insensitive searching UNLESS \C or one or more capital letters in the search term
+#
+set ignorecase
+set smartcase
+# Keep signcolumn on by default
+set signcolumn=yes
+# Decrease update time
+set updatetime=250
+# Configure how new splits should be opened
+set splitright
+set splitbelow
+# Sets how neovim will display certain whitespace characters in the editor.
+set list
+set listchars=tab:»\ ,trail:·,nbsp:␣
+# Preview substitutions live, as you type!
+#set inccommand=split
+# Show which line your cursor is on
+set cursorline
+# Minimal number of screen lines to keep above and below the cursor.
+set scrolloff=8
+
+set nu
+set relativenumber
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
 set smartindent
-set smarttab
-set nobackup
+set nowrap
 set noswapfile
-set nowritebackup
-" highlight search hits
+set nobackup
+set undodir=$HOME/.vim/undo
 set hlsearch
 set incsearch
-set linebreak
-" stop complaints about switching buffer with changes
-set hidden
-nnoremap <Esc> :noh<CR>
-" set colorscheme
-set bg=dark
-colorscheme molokai
-"colorscheme gruvbox8
-"leader
-let mapleader = " "
-" fuzzy finder and Rg
-nnoremap <leader>f :Files<CR>
-nnoremap <leader><leader> :GFiles<CR>
-nnoremap <leader>g :Rg<CR>
+set termguicolors
+set signcolumn=yes
+set colorcolumn=80
+set clipboard=unnamed
+# colorscheme
+colorscheme habamax
+
+# [[ Basic keymaps ]]
+if !has("gui_running")
+    set <M-p>=^[p
+    set <M-P>=^[P
+    set <M-t>=^[t
+endif
+nnoremap <leader>q :lua vim.diagnostic.setloclist()<CR>
+## escape hotkeys
+inoremap jj <Esc>
+inoremap <C-c> <Esc>
+
+# clear highlights
+#nnoremap <esc> :noh<cr>
+
+# Save changes and return to the previous mode
+nnoremap <C-s> <Esc>:up<CR>
+inoremap <C-s> <Esc>:up<CR>i
+xnoremap <C-s> <Esc>:up<CR>gv
+
+# yank behaviour like D or C
+nnoremap Y y$
+
+# Set up key mappings for normal and visual modes
+nnoremap <leader>= '[=]'
+xnoremap <leader>= '[=]'
+
+# Map ; to command mode in normal mode
+nnoremap ; :
+
+# Suggestions for insert completion
+inoremap <C-]> <C-x><C-]>
+inoremap <C-f> <C-x><C-f>
+inoremap <C-d> <C-x><C-d>
+inoremap <C-l> <C-x><C-l>
+
+# Duplicate the current line and preserve cursor position
+nnoremap t :t.<CR>
+inoremap t <Esc>:t.<CR>i
 
 
-"" LSP settings
-function! s:on_lsp_buffer_enabled() abort
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-    nmap <buffer> gd <plug>(lsp-definition)
-    nmap <buffer> gs <plug>(lsp-document-symbol-search)
-    nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
-    nmap <buffer> gr <plug>(lsp-references)
-    nmap <buffer> gi <plug>(lsp-implementation)
-    nmap <buffer> gt <plug>(lsp-type-definition)
-    nmap <buffer> <leader>rn <plug>(lsp-rename)
-    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
-    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
-    nmap <buffer> K <plug>(lsp-hover)
-    nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
-    nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
-    let g:lsp_format_sync_timeout = 1000
-    autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
-    
-    " refer to doc to add more commands
+# Run make command
+function RunMakePrg()
+	let command = &makeprg
+	Sh &command
 endfunction
-augroup lsp_install
-    au!
-    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+
+nnoremap <F9> <scriptcmd>RunMakePrg()<CR>
+
+# Quickfix navigation
+nnoremap [q <cmd>cprev<CR>
+nnoremap ]q <cmd>cnext<CR>
+
+# Map Backspace to switch to the last buffer
+# nnoremap <BS> :b #<CR>
+
+#leader
+g:mapleader = "\<space>"
+
+# fuzzy finder and Rg
+nnoremap <leader>f <cmd>Scope File<cr>
+nnoremap <leader>g <cmd>Scope Grep<cr>
+nnoremap <leader>h <cmd>Scope Help<cr>
+
+# call yankstack with Alt+P
+nnoremap p <Plug>yankstack_substitute_older_paste
+
+nnoremap <bs> <cmd>Dir<cr>
+
+# LSP
+g:vimcomplete_tab_enable = 1
+var lspServers = [
+	{
+		name: 'clangd',
+		filetype: ['c', 'cpp'],
+		path: '/usr/bin/clangd',
+		args: ['--background-index']
+	}
+]
+lsp#lsp#AddServer(lspServers)
+# autocmd User LspSetup LspAddServer(lspServers)
+
+function On_lsp_buffer_enabled() abort
+    nmap <buffer> <silent> gd :LspGotoDefinition<CR>
+    nmap <buffer> <silent> gr :LspShowReferences<CR>
+    nmap <buffer> <silent> gi :LspGotoImpl<CR>
+    nmap <buffer> <silent> gy :LspGotoTypeDef<CR>
+    nmap <buffer> <silent> <leader>r :LspRename<CR>
+    nmap <buffer> <silent> <leader>a :LspCodeAction<CR>
+    nmap <buffer> <silent> K :LspHover<Cr>
+    nmap <buffer> <silent> ]d :LspDiag next<Cr>
+    nmap <buffer> <silent> [d :LspDiag prev<Cr>
+endfunction
+
+augroup Linting
+	autocmd!
+	autocmd FileType rust setlocal makeprg=cargo\ build
+	autocmd FileType c,cpp setlocal makeprg=xmake
+	autocmd FileType c,cpp setlocal efm=%.%#:\ %f:%l:%c:\ %m
+	#autocmd BufWritePost *.rs AsyncDo cargo build
+	#autocmd BufWritePost *.c,*.cpp AsyncDo xmake
+	autocmd QuickFixCmdPost [^l]* cwindow
+	autocmd User LspAttached On_lsp_buffer_enabled()
+augroup END
+
+augroup AutomaticMarks
+	autocmd!
+	autocmd BufLeave *.css,*.scss normal! mC
+	autocmd BufLeave *.html       normal! mH
+	autocmd BufLeave *.js,*.ts    normal! mJ
+	autocmd BufLeave *.vue        normal! mV
+	autocmd BufLeave *.yml,*.yaml normal! mY
+	autocmd BufLeave .env*        normal! mE
+	autocmd BufLeave *.md         normal! mM
 augroup END
