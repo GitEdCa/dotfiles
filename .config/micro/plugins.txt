@@ -1,0 +1,6 @@
+fzf
+jump
+runit
+diff
+palettero
+cheat

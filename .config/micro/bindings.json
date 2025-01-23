@@ -1,0 +1,20 @@
+{
+    "Alt-.": "JumpToMatchingBrace",
+    "Alt-/": "lua:comment.comment",
+    "Alt-P": "command:fzf",
+    "Ctrl-/": "lua:comment.comment",
+    "CtrlDown": "ParagraphNext",
+    "CtrlR": "FindPrevious",
+    "CtrlShiftDown": "SelectToParagraphNext",
+    "CtrlShiftUp": "SelectToParagraphPrevious",
+    "CtrlSpace": "command:palettero",
+    "CtrlUnderscore": "lua:comment.comment",
+    "CtrlUp": "ParagraphPrevious",
+    "Ctrlw": "DeleteWordLeft",
+    "F1": "command:cheat",
+    "F12": "command:makeup",
+    "F2": "NextSplit|VSplit",
+    "F4": "command:jumptag",
+    "F5": "command:runit",
+    "F9": "command:makeupbg"
+}
