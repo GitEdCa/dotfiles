@@ -2,13 +2,19 @@
 vim.g.mapleader = ' '
 vim.opt.mouse = 'a'
 -- copy to system clipboard by default
-vim.opt.clipboard = 'unnamedplus'
+vim.schedule(function()
+	vim.opt.clipboard = 'unnamedplus'
+end)
 -- enable icons
--- vim.opt.breakindent    = true
+vim.g.have_nerd_font = true
+-- Enable break indent
+vim.opt.breakindent    = true
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.ignorecase     = true
 vim.opt.smartcase      = true
 -- Keep signcolumn on by default
+vim.opt.signcolumn     = 'yes'
+-- Decrease update time
 vim.opt.updatetime     = 250
 -- Configure how new splits should be opened
 vim.opt.splitright     = true
@@ -23,20 +29,21 @@ vim.opt.cursorline     = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff      = 8
 
--- vim.opt.guicursor      = ""
+vim.opt.guicursor      = ""
 vim.opt.nu             = true
 vim.opt.relativenumber = true
--- vim.opt.tabstop        = 4
--- vim.opt.softtabstop    = 4
--- vim.opt.shiftwidth     = 4
--- vim.opt.smartindent    = true
--- vim.opt.wrap           = false
--- vim.opt.swapfile       = false
--- vim.opt.backup         = false
--- vim.opt.undodir        = os.getenv("HOME") .. "/.undodir"
--- vim.opt.undofile       = true
--- vim.opt.hlsearch       = false
--- vim.opt.incsearch      = true
+vim.opt.tabstop        = 4
+vim.opt.softtabstop    = 4
+vim.opt.shiftwidth     = 4
+vim.opt.smartindent    = true
+vim.opt.wrap           = false
+vim.opt.swapfile       = false
+vim.opt.backup         = false
+-- Save undo history
+vim.opt.undodir        = os.getenv("HOME") .. "/.undodir"
+vim.opt.undofile       = true
+vim.opt.hlsearch       = false
+vim.opt.incsearch      = true
 vim.opt.termguicolors  = true
 vim.opt.signcolumn     = "yes"
 vim.opt.colorcolumn    = "80"
@@ -67,192 +74,266 @@ vim.keymap.set('n', '[q', '<cmd>cprev<cr>')
 vim.keymap.set('n', ']q', '<cmd>cnext<cr>')
 -- open last buffer with Backspace key
 vim.keymap.set('n', '<BS>', ':b#<CR>')
--- netrw
-vim.keymap.set('n', '<leader>e', ':Explore<CR>')
 
 -- [[ Basic Autocommands ]]
-vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-  callback = function()
-    vim.highlight.on_yank()
-  end,
+vim.api.nvim_create_autocmd({'BufEnter', 'BufNewFile'}, {
+	desc = 'Set syntax asciidoc',
+	pattern = "{*.txt}",
+	group = vim.api.nvim_create_augroup('set-asciidoc-syntax', { clear = true }),
+	callback = function()
+		vim.cmd[[set syntax=asciidoc]]
+	end,
 })
-
+vim.api.nvim_create_autocmd('TextYankPost', {
+	desc = 'Highlight when yanking (copying) text',
+	group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+	callback = function()
+		vim.highlight.on_yank()
+	end,
+})
 -- start insert mode when moving to a terminal window
 vim.api.nvim_create_autocmd({ 'BufWinEnter', 'WinEnter' }, {
-  callback = function()
-    if vim.bo.buftype == 'terminal' then vim.cmd('startinsert') end
-  end,
-  group = vim_term
+	callback = function()
+		if vim.bo.buftype == 'terminal' then vim.cmd('startinsert') end
+	end,
+	group = vim_term
 })
-
 -- automatic marks per file
 vim.cmd[[
-  augroup AutomaticMarks
-    autocmd!
-    autocmd BufLeave *.css,*.scss normal! mC
-    autocmd BufLeave *.html       normal! mH
-    autocmd BufLeave *.js,*.ts    normal! mJ
-    autocmd BufLeave *.vue        normal! mV
-    autocmd BufLeave *.yml,*.yaml normal! mY
-    autocmd BufLeave .env*        normal! mE
-    autocmd BufLeave *.md         normal! mM
-    autocmd BufLeave *.lua        normal! mL
-  augroup END
+augroup AutomaticMarks
+autocmd!
+autocmd BufLeave *.css,*.scss normal! mC
+autocmd BufLeave *.html       normal! mH
+autocmd BufLeave *.js,*.ts    normal! mJ
+autocmd BufLeave *.vue        normal! mV
+autocmd BufLeave *.yml,*.yaml normal! mY
+autocmd BufLeave .env*        normal! mE
+autocmd BufLeave *.md         normal! mM
+autocmd BufLeave *.lua        normal! mL
+augroup END
 ]]
-
 -- linting
 vim.cmd [[
-  augroup Linting
-	  autocmd!
-	  autocmd FileType rust setlocal makeprg=cargo\ build
-	  "autocmd FileType c,cpp setlocal makeprg=make
-	  "autocmd FileType c,cpp setlocal efm=%.%#:\ %f:%l:%c:\ %m
-	  "autocmd BufWritePost *.rs AsyncDo cargo build
-	  "autocmd BufWritePost *.c,*.cpp AsyncDo xmake
-	  autocmd QuickFixCmdPost [^l]* cwindow
-  augroup END
+	augroup Linting
+	autocmd!
+	autocmd FileType rust setlocal makeprg=cargo\ build
+	autocmd FileType c,cpp setlocal makeprg=xmake
+	autocmd FileType c,cpp setlocal efm=%.%#:\ %f:%l:%c:\ %m
+	"autocmd BufWritePost *.rs AsyncDo cargo build
+	"autocmd BufWritePost *.c,*.cpp AsyncDo xmake
+	autocmd QuickFixCmdPost [^l]* cwindow
+	augroup END
 ]]
 local function RunAsyncDoWithMakePrg()
-    local makeprg_value = vim.opt.makeprg:get()
-    vim.fn["asyncdo#run"](0, makeprg_value)
+	local makeprg_value = vim.opt.makeprg:get()
+	vim.fn["asyncdo#run"](0, makeprg_value)
 end
 vim.keymap.set('n', '<F9>', RunAsyncDoWithMakePrg, { noremap = true, silent = true})
 
 -- [[ Plugins ]]
-local vim = vim
-local Plug = vim.fn['plug#']
-
-vim.call('plug#begin')
-	Plug('tpope/vim-fugitive', { ['on'] = 'Git' })
-	Plug('echasnovski/mini.nvim')
-	Plug('ibhagwan/fzf-lua')
-	Plug('mbbill/undotree', { ['on'] = 'UndotreeToggle'})
-	Plug("neovim/nvim-lspconfig")
-	Plug("hauleth/asyncdo.vim")
-
-	Plug("MeanderingProgrammer/render-markdown.nvim")
-	Plug('norcalli/nvim-colorizer.lua')
-	Plug('rebelot/kanagawa.nvim')
-	Plug('Saghen/blink.cmp', {['on'] = '*'})
-	Plug('rafamadriz/friendly-snippets')
-vim.call('plug#end')
-
--- [[ nvim-colorizer ]]
-require('colorizer').setup()
-
--- [[ colorscheme ]]
-vim.cmd('silent! colorscheme kanagawa-dragon')
-
--- [[ mini.completion ]]
-require('mini.completion').setup()
-local imap_expr = function(lhs, rhs)
-	vim.keymap.set('i', lhs, rhs, { expr = true })
-end
-imap_expr('<Tab>',   [[pumvisible() ? "\<C-n>" : "\<Tab>"]])
-imap_expr('<S-Tab>', [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
-local keycode = vim.keycode or function(x)
-	return vim.api.nvim_replace_termcodes(x, true, true, true)
-end
-local keys = {
-	['cr']        = keycode('<CR>'),
-	['ctrl-y']    = keycode('<C-y>'),
-	['ctrl-y_cr'] = keycode('<C-y><CR>'),
-}
-_G.cr_action = function()
-	if vim.fn.pumvisible() ~= 0 then
-		local item_selected = vim.fn.complete_info()['selected'] ~= -1
-		return item_selected and keys['ctrl-y'] or keys['ctrl-y_cr']
-	else
-		return keys['cr']
+-- [[ Configure and install plugins ]]
+-- Bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+if not vim.loop.fs_stat(lazypath) then
+	local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
+	local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
+	if vim.v.shell_error ~= 0 then
+		error('Error cloning lazy.nvim:\n' .. out)
 	end
-end
-vim.keymap.set('i', '<CR>', 'v:lua._G.cr_action()', { expr = true })
+end ---@diagnostic disable-next-line: undefined-field
+vim.opt.rtp:prepend(lazypath)
 
--- [[ undotree]]
-vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle )
+require('lazy').setup({
 
--- [[ lspconfig]]
-local servers = {
-	rust_analyzer = {
-		filetypes = { "rust" },
-		settings = {
-			['rust-analyzer'] = {
-				cargo = {
-					allFeatures = true,
-				},
+	{ -- Adds git related signs to the gutter, as well as utilities for managing changes
+		'lewis6991/gitsigns.nvim',
+		opts = {
+			signs = {
+				add = { text = '+' },
+				change = { text = '~' },
+				delete = { text = '_' },
+				topdelete = { text = '‾' },
+				changedelete = { text = '~' },
 			},
 		},
 	},
-	clangd = {},
-	pyright = {},
-}
-for server, settings in pairs(servers) do
-	require("lspconfig")[server].setup(settings)
-end
 
-vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
-  callback = function(event)
-    local map = function(keys, func, desc, mode)
-      mode = mode or 'n'
-      vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
-    end
-    local opts = { buffer = bufnr }
-    local builtin = require('fzf-lua')
-    map('K', vim.lsp.buf.hover, 'SHow info over cursor')
-    map('gd', vim.lsp.buf.definition, 'Go to definition')
-    map('gD', vim.lsp.buf.declaration, 'Go to Declarations')
-    map('gi', vim.lsp.buf.implementation, 'Go to Implementations')
-    map('go', vim.lsp.buf.type_definition, 'Go to Type Definitions')
-    map('gr', vim.lsp.buf.references, 'Go to References')
-    -- vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
-    map('<C-k>', vim.lsp.buf.signature_help, 'Signature help', {'i', 'n'})
-    map('<leader>r', vim.lsp.buf.rename, 'Rename')
-    map('<leader>F', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', 'Format', { 'n', 'x' })
-    map('<leader>a', builtin.lsp_code_actions, 'Open code actions')
-    map("<C-k>", vim.diagnostic.open_float, 'Show error line')
+	{ -- colorscheme
+		'rebelot/kanagawa.nvim',
+		priority = 1000, -- Make sure to load this before all the other start plugins.
+		init = function()
+			vim.cmd.colorscheme('kanagawa-dragon')
+		end,
+	},
 
-    local client = vim.lsp.get_client_by_id(event.data.client_id)
-    if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
-      map('<leader>th', function()
-	vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-      end, '[T]oggle Inlay [H]ints')
-    end
-  end,
+	{ -- ale
+		'dense-analysis/ale',
+		config = function()
+			local g = vim.g
+
+			g.ale_ruby_rubocop_auto_correct_all = 1
+
+			g.ale_linters = {
+				lua = {'lua_language_server'},
+				rust = {'analyzer'},
+			}
+		end
+	},
+
+	{ -- blink autocomplete
+		'saghen/blink.cmp',
+		dependencies = 'rafamadriz/friendly-snippets',
+
+		version = '*',
+		opts = {
+			keymap = {
+				preset = "default",
+				["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+				["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+				["<CR>"] = { "accept", "fallback" },
+				["<Esc>"] = { "hide", "fallback" },
+				["<PageUp>"] = { "scroll_documentation_up", "fallback" },
+				["<PageDown>"] = { "scroll_documentation_down", "fallback" },
+			},
+
+			sources = {
+				cmdline = {},
+			},
+		},
+	},
+
+	{ -- Collection of various small independent plugins/modules
+		'echasnovski/mini.nvim',
+		config = function()
+			require('mini.indentscope').setup {}
+			require('mini.pairs').setup {}
+			require('mini.bracketed').setup {}
+			require('mini.surround').setup()
+			require('mini.jump2d').setup()
+
+			local statusline = require 'mini.statusline'
+			statusline.setup { use_icons = false }
+			---@diagnostic disable-next-line: duplicate-set-field
+			statusline.section_location = function()
+				return '%2l:%-2v'
+			end
+
+			require('mini.files').setup()
+			vim.keymap.set('n', '<leader>E', function() MiniFiles.open() end)
+			vim.keymap.set('n', '<leader>e', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end)
+
+		end
+	},
+
+	{ -- Fuzzy Finder (files, lsp, etc)
+		'nvim-telescope/telescope.nvim',
+		event = 'VimEnter',
+		tag = '0.1.8',
+		dependencies = {
+			'nvim-lua/plenary.nvim',
+			{ 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
+		},
+		config = function()
+			require('telescope').load_extension('fzf')
+			require('telescope').setup()
+
+			-- See `:help telescope.builtin`
+			local builtin = require 'telescope.builtin'
+			vim.keymap.set('n', '<leader>h', builtin.help_tags)
+			vim.keymap.set('n', '<leader>f', builtin.find_files)
+			vim.keymap.set('n', '<leader>,', builtin.builtin)
+			vim.keymap.set('n', '<leader>G', builtin.live_grep)
+			vim.keymap.set('n', '<leader>g', builtin.grep_string)
+			vim.keymap.set('n', '<leader>.', builtin.resume)
+			vim.keymap.set('n', '<leader><leader>', builtin.buffers)
+			vim.keymap.set('n', '<leader>/', builtin.current_buffer_fuzzy_find)
+		end,
+	},
+
+	{
+		'maxbrunsfeld/vim-yankstack',
+		event = 'VeryLazy',
+	},
+
+	{
+		'mbbill/undotree',
+		keys = {
+			{ '<leader>u', vim.cmd.UndotreeToggle }
+		},
+	},
+
+	{ --lsp
+		"neovim/nvim-lspconfig",
+		config = function()
+			local servers = {
+				-- clangd = {},
+				pyright = {},
+			}
+			for server, settings in pairs(servers) do
+				require("lspconfig")[server].setup(settings)
+			end
+
+			vim.api.nvim_create_autocmd('LspAttach', {
+				group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
+				callback = function(event)
+					local map = function(keys, func, desc, mode)
+						mode = mode or 'n'
+						vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+					end
+					local opts = { buffer = bufnr }
+					map('K', vim.lsp.buf.hover, 'SHow info over cursor')
+					map('gd', vim.lsp.buf.definition, 'Go to definition')
+					map('gD', vim.lsp.buf.declaration, 'Go to Declarations')
+					map('gi', vim.lsp.buf.implementation, 'Go to Implementations')
+					map('go', vim.lsp.buf.type_definition, 'Go to Type Definitions')
+					map('gr', vim.lsp.buf.references, 'Go to References')
+					-- vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
+					map('<C-k>', vim.lsp.buf.signature_help, 'Signature help', {'i', 'n'})
+
+					map('<F2>', vim.lsp.buf.rename, 'Rename')
+					vim.keymap.set({ 'n', 'x' }, '<F3>',
+					'<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+					map('<F4>', vim.lsp.buf.code_action, 'Open code actions')
+					map("<C-k>", vim.diagnostic.open_float, 'Show error line')
+
+					local client = vim.lsp.get_client_by_id(event.data.client_id)
+					if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+						map('<leader>th', function()
+							vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
+						end, '[T]oggle Inlay [H]ints')
+					end
+				end,
+			})
+
+			vim.diagnostic.config({
+				-- update_in_insert = true,
+				float = {
+					focusable = false,
+					style = "minimal",
+					border = "rounded",
+					source = "always",
+					header = "",
+					prefix = "",
+				},
+			})
+		end,
+	},
+
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		opts = {},
+	},
+
+	{
+		'brenoprata10/nvim-highlight-colors',
+		opts = {
+			render = 'virtual',
+			enable_Tailwind = true,
+		},
+	},
+
 })
-vim.diagnostic.config({
--- update_in_insert = true,
-  float = {
-    focusable = false,
-    style = "minimal",
-    border = "rounded",
-    source = "always",
-    header = "",
-    prefix = "",
-  },
-})
 
--- [[ fzf-lua ]]
-local builtin = require 'fzf-lua'
-vim.keymap.set('n', '<leader>h', builtin.helptags)
-vim.keymap.set('n', '<leader>f', builtin.files)
-vim.keymap.set('n', '<leader>,', builtin.builtin)
-vim.keymap.set('n', '<leader>G', builtin.live_grep)
-vim.keymap.set('n', '<leader>g', builtin.grep_cword)
-vim.keymap.set('n', '<leader>.', builtin.resume)
-vim.keymap.set('n', '<leader><leader>', builtin.buffers)
-vim.keymap.set('n', '<leader>/', builtin.blines)
-
--- [[ netrw ]]
-vim.g.netrw_keepdir = 0
-vim.g.netrw_liststyle = 1
-vim.g.netrw_banner = 0
-vim.g.netrw_localcopydircmd = 'cp -r'
-vim.g.netrw_list_hide = [[\(^\|\s\s\)\zs\.\S\+]]
-
--- [[ rlbook ]]
 local rlbook = require('rlbook')
 vim.keymap.set('n', '<leader>1', function() rlbook.save_bookmark(1) end, { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>2', function() rlbook.save_bookmark(2) end, { noremap = true, silent = true })
@@ -260,5 +341,4 @@ vim.keymap.set('n', '<leader>3', function() rlbook.save_bookmark(3) end, { norem
 vim.keymap.set('n', '<A-1>', function() rlbook.goto_bookmark(1) end, { noremap = true, silent = true })
 vim.keymap.set('n', '<A-2>', function() rlbook.goto_bookmark(2) end, { noremap = true, silent = true })
 vim.keymap.set('n', '<A-3>', function() rlbook.goto_bookmark(3) end, { noremap = true, silent = true })
-
 
