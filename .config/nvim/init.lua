@@ -196,6 +196,12 @@ require('lazy').setup({
 				["<PageDown>"] = { "scroll_documentation_down", "fallback" },
 			},
 
+			completion = {
+				list = {
+					selection = { preselect = false, auto_insert = true }
+				}
+			},
+
 			sources = {
 				cmdline = {},
 			},
@@ -281,20 +287,15 @@ require('lazy').setup({
 						vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
 					end
 					local opts = { buffer = bufnr }
-					map('K', vim.lsp.buf.hover, 'SHow info over cursor')
 					map('gd', vim.lsp.buf.definition, 'Go to definition')
 					map('gD', vim.lsp.buf.declaration, 'Go to Declarations')
 					map('gi', vim.lsp.buf.implementation, 'Go to Implementations')
 					map('go', vim.lsp.buf.type_definition, 'Go to Type Definitions')
 					map('gr', vim.lsp.buf.references, 'Go to References')
-					-- vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, opts)
-					map('<C-k>', vim.lsp.buf.signature_help, 'Signature help', {'i', 'n'})
 
-					map('<F2>', vim.lsp.buf.rename, 'Rename')
-					vim.keymap.set({ 'n', 'x' }, '<F3>',
-					'<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
-					map('<F4>', vim.lsp.buf.code_action, 'Open code actions')
-					map("<C-k>", vim.diagnostic.open_float, 'Show error line')
+					map('<leader>r', vim.lsp.buf.rename, 'Rename')
+					vim.keymap.set({ 'n', 'x' }, '<leader>F', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+					map('<leader>a', vim.lsp.buf.code_action, 'Open code actions')
 
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
 					if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
