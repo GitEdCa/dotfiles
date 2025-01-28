@@ -1,0 +1,57 @@
+#!/bin/bash
+
+set -xe
+
+error() {
+	echo "error: $1, aborting"
+	exit 1
+}
+
+confirm_or_fail() {
+	read -r -p "$1" answer
+	case ${answer:0:1} in
+	y | Y) ;;
+
+	*)
+		error "$2"
+		;;
+	esac
+}
+
+editor=${EDITOR:=micro}
+
+create_and_edit() {
+	note_filename="$(date -I).md"
+
+	if [ -f "$note_filename" ]; then
+		$editor "$note_filename"
+	else
+		touch "$note_filename"
+		echo "$note_filename"
+		echo "$note_filename" > "$note_filename"
+		echo "" >>"$note_filename"
+		echo "" >>"$note_filename"
+		$editor "$note_filename" +2
+	fi
+}
+
+note_path=${NOTE_PATH:=$HOME/notes}
+mkdir -p -v "$note_path" || error "could not create $note_path"
+cd "$note_path" || error "$note_path does not exist"
+# note_filename="$(date -I).md"
+
+if [ $# -eq 0 ]; then
+	ref=$(rg --line-number --color=always --with-filename --follow . --field-match-separator ' ' |
+		fzf --ansi --preview "bat --color=always {1} --highlight-line {2}" |
+		head -n1 | awk '{print $1 " +" $2;}')
+
+	if [ -n "$ref" ]; then
+		# shellcheck disable=SC2086
+		$editor $ref # intentional word split: `[filename] +[line_number]`
+	else
+		create_and_edit
+	fi
+
+	exit 0
+fi
+
