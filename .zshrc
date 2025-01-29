@@ -50,6 +50,8 @@ alias gp='git pull'
 alias gs='git status'
 alias lg='lazygit'
 
+# dotfiles
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 
 # ~~~ Completion ~~~
 autoload -Uz compinit; compinit -u
