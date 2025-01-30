@@ -86,6 +86,9 @@ vim.keymap.set({ 'x', 'n', 'i' }, '<C-s>', '<Esc><cmd>up<CR><ESC>')
 -- open last buffer with Backspace key
 vim.keymap.set('n', '<BS>', ':b#<CR>')
 
+-- kj as esc
+vim.keymap.set('i', 'kj', '<Esc>', { noremap = true, silent = true })
+
 
 -- [[ Basic Autocommands ]]
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -172,10 +175,28 @@ vim.keymap.set('n', '<leader>e', function() MiniFiles.open(vim.api.nvim_buf_get_
 -- tab to complete
 require('mini.completion').setup()
 local imap_expr = function(lhs, rhs)
-vim.keymap.set('i', lhs, rhs, { expr = true })
+    vim.keymap.set('i', lhs, rhs, { expr = true })
 end
 imap_expr('<Tab>',   [[pumvisible() ? "\<C-n>" : "\<Tab>"]])
 imap_expr('<S-Tab>', [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
+local keycode = vim.keycode or function(x)
+    return vim.api.nvim_replace_termcodes(x, true, true, true)
+end
+local keys = {
+    ['cr']        = keycode('<CR>'),
+    ['ctrl-y']    = keycode('<C-y>'),
+    ['ctrl-y_cr'] = keycode('<C-y><CR>'),
+}
+
+_G.cr_action = function()
+    if vim.fn.pumvisible() ~= 0 then
+        local item_selected = vim.fn.complete_info()['selected'] ~= -1
+        return item_selected and keys['ctrl-y'] or keys['ctrl-y_cr']
+    else
+        return keys['cr']
+    end
+end
+vim.keymap.set('i', '<CR>', 'v:lua._G.cr_action()', { expr = true })
 
 require('mini.pick').setup()
 vim.keymap.set('n', '<leader>f', function() MiniPick.builtin.files() end)
@@ -196,7 +217,6 @@ require('nvim-highlight-colors').setup()
 vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = 'Open UndoTree' })
 
 -- lspconfig
-
 local servers = {
     -- clangd = {},
     -- pyright = {},
