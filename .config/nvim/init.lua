@@ -43,6 +43,20 @@ vim.opt.ignorecase = true -- ignore case in search
 vim.opt.smartcase = true -- match case if explicitly stated 
 vim.opt.inccommand = 'split' -- Preview substitutions live, as you type!
 
+-- statusline
+vim.o.laststatus = 2  -- Always show the status line
+vim.o.statusline = "%f"  -- File path
+vim.o.statusline = vim.o.statusline .. "%h%w"  -- Help and preview windows
+vim.o.statusline = vim.o.statusline .. "%m"  -- Modified flag
+vim.o.statusline = vim.o.statusline .. "%r"  -- Read-only flag
+vim.o.statusline = vim.o.statusline .. "%="  -- Align the rest to the right
+vim.o.statusline = vim.o.statusline .. "%{&filetype}"  -- File type
+vim.o.statusline = vim.o.statusline .. " [%{strlen(&fileencoding) > 0 ? &fileencoding : 'none'}]"  -- Encoding
+vim.o.statusline = vim.o.statusline .. " %{&fileformat}"  -- File format
+vim.o.statusline = vim.o.statusline .. " %{line('.')}"  -- Line number
+vim.o.statusline = vim.o.statusline .. "/"  -- Separator
+vim.o.statusline = vim.o.statusline .. "%L"  -- Column number / Total lines
+
 
 -- [[ keymaps ]]
 -- Set our leader keybinding to space
@@ -112,31 +126,20 @@ local Plug = vim.fn['plug#']
 
 vim.call('plug#begin')
     Plug('tpope/vim-sleuth')
-    Plug('lewis6991/gitsigns.nvim')
+    Plug('tpope/vim-fugitive')
     Plug('catppuccin/nvim')
     Plug('dense-analysis/ale')
     Plug('echasnovski/mini.nvim')
-    Plug('maxbrunsfeld/vim-yankstack')
     Plug('mbbill/undotree', { on = 'UndotreeToggle' })
     Plug('MeanderingProgrammer/render-markdown.nvim')
     Plug('brenoprata10/nvim-highlight-colors')
     Plug('doums/suit.nvim')
     Plug('neovim/nvim-lspconfig')
+    Plug('saghen/blink.cmp', { tag = '*'} )
+    Plug('rafamadriz/friendly-snippets')
 vim.call('plug#end')
 
 vim.cmd.colorscheme('catppuccin') -- set colorscheme
-
--- gitsigns
-require('gitsigns').setup({
-    signs = {
-        add          = { text = '┃' },
-        change       = { text = '┃' },
-        delete       = { text = '_' },
-        topdelete    = { text = '‾' },
-        changedelete = { text = '~' },
-        untracked    = { text = '┆' },
-    },
-})
 
 -- ale
 local g = vim.g
@@ -146,58 +149,21 @@ local g = vim.g
 -- 	c = { 'clang', 'gcc', 'cppcheck' },
 -- 	cpp = { 'clang', 'gcc', 'cppcheck', 'clang-tidy' },
 -- }
-g.ale_lint_on_save = 1
 g.ale_lint_on_text_changed = 0
 g.ale_lint_on_insert_leave = 0
+g.ale_lint_on_save = 1
 
 -- mini 
-require('mini.indentscope').setup {}
 require('mini.pairs').setup {}
-require('mini.bracketed').setup {}
 require('mini.surround').setup()
-require('mini.jump2d').setup({
-    mappings = {
-        start_jumping = 'gw',
-    },
-})
 require('mini.icons').setup()
-
-local statusline = require 'mini.statusline'
-statusline.setup { use_icons = false }
-statusline.section_location = function()
-    return '%2l:%-2v'
-end
+require('mini.diff').setup()
 
 require('mini.files').setup()
 vim.keymap.set('n', '<leader>E', function() MiniFiles.open() end)
 vim.keymap.set('n', '<leader>e', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end)
 
 -- tab to complete
-require('mini.completion').setup()
-local imap_expr = function(lhs, rhs)
-    vim.keymap.set('i', lhs, rhs, { expr = true })
-end
-imap_expr('<Tab>',   [[pumvisible() ? "\<C-n>" : "\<Tab>"]])
-imap_expr('<S-Tab>', [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]])
-local keycode = vim.keycode or function(x)
-    return vim.api.nvim_replace_termcodes(x, true, true, true)
-end
-local keys = {
-    ['cr']        = keycode('<CR>'),
-    ['ctrl-y']    = keycode('<C-y>'),
-    ['ctrl-y_cr'] = keycode('<C-y><CR>'),
-}
-
-_G.cr_action = function()
-    if vim.fn.pumvisible() ~= 0 then
-        local item_selected = vim.fn.complete_info()['selected'] ~= -1
-        return item_selected and keys['ctrl-y'] or keys['ctrl-y_cr']
-    else
-        return keys['cr']
-    end
-end
-vim.keymap.set('i', '<CR>', 'v:lua._G.cr_action()', { expr = true })
-
 require('mini.pick').setup()
 vim.keymap.set('n', '<leader>f', function() MiniPick.builtin.files() end)
 vim.keymap.set('n', '<leader>F', function() MiniPick.builtin.git() end)
@@ -224,6 +190,7 @@ local servers = {
     -- rust_analyzer = {},
 }
 for server, settings in pairs(servers) do
+    settings.capabilities = require('blink.cmp').get_lsp_capabilities()
     require("lspconfig")[server].setup(settings)
 end
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -266,6 +233,29 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 -- suit.nvim
 require('suit').setup()
+
+-- blink.cmp
+local blink = require('blink.cmp').setup({
+    keymap = {
+        preset = "default",
+        ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+        ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+        ["<CR>"] = { "accept", "fallback" },
+        ["<Esc>"] = {},
+        ["<PageUp>"] = { "scroll_documentation_up", "fallback" },
+        ["<PageDown>"] = { "scroll_documentation_down", "fallback" },
+    },
+
+    completion = {
+        list = {
+            selection = { preselect = false, auto_insert = true }
+        }
+    },
+
+    sources = {
+        cmdline = {},
+    },
+})
 
 -- rlbook
 local rlbook = require('rlbook')
