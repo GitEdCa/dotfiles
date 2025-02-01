@@ -61,5 +61,5 @@ zstyle ':completion:*' menu select
 
 # ~~~ Sourcing ~~~
 
-source <(fzf --zsh)
-
+source <(fzf --zsh) # activate fzf
+eval "$(zoxide init zsh)" # activate zoxide

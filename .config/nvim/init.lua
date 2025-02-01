@@ -20,7 +20,6 @@ vim.opt.breakindent = true -- enable line breaking indentation
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.backup = false -- disable backup file creation
-vim.opt.clipboard = "unnamedplus" -- enable system clipboard access
 vim.opt.conceallevel = 0 -- so that `` is visible in markdown files
 vim.opt.fileencoding = "utf-8" -- set file encoding to UTF-8
 vim.opt.mouse = "a" -- enable mouse support
@@ -103,6 +102,11 @@ vim.keymap.set('n', '<BS>', ':b#<CR>')
 -- kj as esc
 vim.keymap.set('i', 'kj', '<Esc>', { noremap = true, silent = true })
 
+-- clipboards hotkeys
+vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
+vim.keymap.set({"n", "v"}, "<leader>Y", [["+Y]])
+vim.keymap.set({'n', 'v'},'<leader>p', [["+p"]])
+vim.keymap.set({'n', 'v'},'<leader>P', [['"+P]])
 
 -- [[ Basic Autocommands ]]
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -113,6 +117,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 	end,
 })
 
+vim.api.nvim_create_autocmd('TermOpen', {
+	desc = 'No numbers for terminals',
+	group = vim.api.nvim_create_augroup('custom-term-open', { clear = true }),
+	callback = function()
+            vim.opt.number = false
+            vim.opt.relativenumber = false
+	end,
+})
 -- [[ plugins ]]
 local data_dir = vim.fn.has('nvim') == 1 and vim.fn.stdpath('data') .. '/site' or vim.fn.expand('~/.vim')
 if vim.fn.empty(vim.fn.glob(data_dir .. '/autoload/plug.vim')) == 1 then
@@ -127,7 +139,7 @@ local Plug = vim.fn['plug#']
 vim.call('plug#begin')
     Plug('tpope/vim-sleuth')
     Plug('tpope/vim-fugitive')
-    Plug('catppuccin/nvim')
+    Plug('vague2k/vague.nvim')
     Plug('dense-analysis/ale')
     Plug('echasnovski/mini.nvim')
     Plug('mbbill/undotree', { on = 'UndotreeToggle' })
@@ -137,9 +149,12 @@ vim.call('plug#begin')
     Plug('neovim/nvim-lspconfig')
     Plug('saghen/blink.cmp', { tag = '*'} )
     Plug('rafamadriz/friendly-snippets')
+    Plug('nvim-lua/plenary.nvim')
+    Plug('nvim-telescope/telescope.nvim', { tag = '0.1.8' })
 vim.call('plug#end')
 
-vim.cmd.colorscheme('catppuccin') -- set colorscheme
+-- colorscheme
+vim.cmd.colorscheme('vague') -- set colorscheme
 
 -- ale
 local g = vim.g
@@ -149,6 +164,9 @@ local g = vim.g
 -- 	c = { 'clang', 'gcc', 'cppcheck' },
 -- 	cpp = { 'clang', 'gcc', 'cppcheck', 'clang-tidy' },
 -- }
+--g.ale_linter_aliases = {
+--   java = { 'jdtls' }
+--}
 g.ale_lint_on_text_changed = 0
 g.ale_lint_on_insert_leave = 0
 g.ale_lint_on_save = 1
@@ -157,21 +175,28 @@ g.ale_lint_on_save = 1
 require('mini.pairs').setup {}
 require('mini.surround').setup()
 require('mini.icons').setup()
-require('mini.diff').setup()
 
 require('mini.files').setup()
 vim.keymap.set('n', '<leader>E', function() MiniFiles.open() end)
 vim.keymap.set('n', '<leader>e', function() MiniFiles.open(vim.api.nvim_buf_get_name(0)) end)
 
--- tab to complete
-require('mini.pick').setup()
-vim.keymap.set('n', '<leader>f', function() MiniPick.builtin.files() end)
-vim.keymap.set('n', '<leader>F', function() MiniPick.builtin.git() end)
-vim.keymap.set('n', '<leader>g', function() MiniPick.builtin.grep() end)
-vim.keymap.set('n', '<leader>G', function() MiniPick.builtin.grep_live() end)
-vim.keymap.set('n', '<leader>h', function() MiniPick.builtin.help() end)
-vim.keymap.set('n', '<leader>,', function() MiniPick.builtin.resume() end)
-vim.keymap.set('n', '<leader><leader>', function() MiniPick.builtin.buffers() end)
+-- telescope
+require('telescope').setup({
+    defaults = {
+        path_display = {'truncate'}
+    }
+})
+
+local builtin = require 'telescope.builtin'
+vim.keymap.set('n', '<leader>h', builtin.help_tags)
+vim.keymap.set('n', '<leader>f', builtin.find_files)
+vim.keymap.set('n', '<leader>,', builtin.builtin)
+vim.keymap.set('n', '<leader>g', builtin.grep_string)
+vim.keymap.set('n', '<leader>G', builtin.live_grep)
+-- vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
+vim.keymap.set('n', '<leader>.', builtin.resume)
+vim.keymap.set('n', '<leader><leader>', builtin.buffers)
+vim.keymap.set('n', '<leader>/', builtin.current_buffer_fuzzy_find)
 
 -- render-markdown.nvim
 require('render-markdown').setup()
@@ -206,6 +231,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
         map('gi', vim.lsp.buf.implementation, 'Go to Implementations')
         map('go', vim.lsp.buf.type_definition, 'Go to Type Definitions')
         map('gr', vim.lsp.buf.references, 'Go to References')
+        map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type Definition')
+        map('<leader>s', require('telescope.builtin').lsp_document_symbols, 'Document Symbols')
+        map('<leader>S', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Workspace Symbols')
 
         map('<leader>r', vim.lsp.buf.rename, 'Rename')
         vim.keymap.set({ 'n', 'x' }, '<leader>F', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
@@ -228,11 +256,11 @@ vim.api.nvim_create_autocmd('LspAttach', {
                 prefix = "",
             },
         })
+        -- activate suit only when lsp is running
+        require('suit').setup()
+
     end,
 })
-
--- suit.nvim
-require('suit').setup()
 
 -- blink.cmp
 local blink = require('blink.cmp').setup({
@@ -245,13 +273,11 @@ local blink = require('blink.cmp').setup({
         ["<PageUp>"] = { "scroll_documentation_up", "fallback" },
         ["<PageDown>"] = { "scroll_documentation_down", "fallback" },
     },
-
     completion = {
         list = {
             selection = { preselect = false, auto_insert = true }
         }
     },
-
     sources = {
         cmdline = {},
     },
