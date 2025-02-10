@@ -1,1 +1,12 @@
-{}
+{
+    "autosave": 5,
+    "colorscheme": "twilight",
+    "diffgutter": true,
+    "hlsearch": true,
+    "parsecursor": true,
+    "pluginrepos": [
+        "https://raw.githubusercontent.com/sebkolind/micro-ag/master/repo.json"
+    ],
+    "reload": "auto",
+    "saveundo": true
+}
