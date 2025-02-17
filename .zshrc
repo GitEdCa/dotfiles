@@ -23,7 +23,7 @@ setopt HIST_IGNORE_DUPS  # Don't save duplicate lines
 setopt SHARE_HISTORY     # Share history between sessions
 
 # ~~~ Prompt ~~~
-# set -o vi  # use vi keybindings
+set -o emacs  # use vi keybindings
 
 PURE_GIT_PULL=0
 
