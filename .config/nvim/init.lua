@@ -66,13 +66,7 @@ local map = vim.keymap.set
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Remove search highlights" })
 
 -- Exit Vim's terminal mode
-map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
-
--- ins-completion suggestions
-map('i', '<C-]>', '<C-x><C-]>', { noremap = true } )
-map('i', '<C-F>', '<C-x><C-f>', { noremap = true } )
-map('i', '<C-D>', '<C-x><C-d>', { noremap = true } )
-map('i', '<C-L>', '<C-x><C-l>', { noremap = true } )
+-- map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
 -- Better window navigation
 map("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
@@ -173,6 +167,13 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
 -- Setup lazy.nvim
+local function term_nav(dir)
+	return function(self)
+		return self:is_floating() and "<c-" .. dir .. ">" or vim.schedule(function()
+			vim.cmd.wincmd(dir)
+		end)
+	end
+end
 require("lazy").setup({
   spec = {
     -- add your plugins here
@@ -234,17 +235,21 @@ require("lazy").setup({
     {
         'neovim/nvim-lspconfig',
         event = 'VeryLazy',
+        dependencies = {
+              { 'williamboman/mason.nvim', opts = {} },
+        },
         config = function(_, opts)
             local servers = {
-                -- clangd = {},
+                clangd = {},
                 -- pyright = {},
                 -- jdtls = {},
                 -- rust_analyzer = {},
             }
             local capabilities = vim.lsp.protocol.make_client_capabilities()
-            capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+            -- capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
             for server, settings in pairs(servers) do
-                settings.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+                -- settings.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+                settings.capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
                 require("lspconfig")[server].setup(settings)
             end
             vim.api.nvim_create_autocmd('LspAttach', {
@@ -255,15 +260,15 @@ require("lazy").setup({
                         vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
                     end
                     local opts = { buffer = bufnr }
-                    local builtin = require 'telescope.builtin'
-                    map('gd', builtin.lsp_definitions, 'Go to definition')
+
                     map('gD', vim.lsp.buf.declaration, 'Go to Declarations')
                     map('gi', vim.lsp.buf.implementation, 'Go to Implementations')
                     map('go', vim.lsp.buf.type_definition, 'Go to Type Definitions')
                     map('gr', vim.lsp.buf.references, 'Go to References')
-                    map('<leader>D', builtin.lsp_type_definitions, 'Type Definition')
-                    map('<leader>s', builtin.lsp_document_symbols, 'Document Symbols')
-                    map('<leader>S', builtin.lsp_dynamic_workspace_symbols, 'Workspace Symbols')
+                    map('gd', function() Snacks.picker.definition() end, 'Go to definition')
+                    map('<leader>D', function() Snacks.picker.lsp_definitions() end, "Goto Definition")
+                    map('<leader>s', function() Snacks.picker.lsp_symbols() end, "LSP Symbols")
+                    map('<leader>S', function() Snacks.picker.lsp_workspace_symbols() end, "LSP Workspace Symbols")
 
                     map('<leader>r', vim.lsp.buf.rename, 'Rename')
                     vim.keymap.set({ 'n', 'x' }, '<leader>F', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
@@ -291,140 +296,104 @@ require("lazy").setup({
         end,
     },
 
-    { -- Autocompletion
-        'hrsh7th/nvim-cmp',
-        event = 'InsertEnter',
-        version = false, -- last release is way too old
-        dependencies = {
-            -- Snippet Engine & its associated nvim-cmp source
-            {
-                'L3MON4D3/LuaSnip',
-                build = (function()
-                    if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-                        return
-                    end
-                    return 'make install_jsregexp'
-                end)(),
-                dependencies = {
-                            {
-                                'rafamadriz/friendly-snippets',
-                                config = function()
-                                    require('luasnip.loaders.from_vscode').lazy_load()
-                                end,
-                            },
-                        },
-                    },
-                    'saadparwaiz1/cmp_luasnip',
-                    'hrsh7th/cmp-nvim-lsp',
-                    'hrsh7th/cmp-path',
-                    "hrsh7th/cmp-buffer",
+        {
+            "saghen/blink.cmp",
+            dependencies = 'rafamadriz/friendly-snippets',
+            -- use a release tag to download pre-built binaries
+            version = '*',
+            opts = {
+                keymap = {
+                    preset = "default",
+                    ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+                    ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+                    ["<CR>"] = { "accept", "fallback" },
+                    ["<Esc>"] = {},
+                    ["<PageUp>"] = { "scroll_documentation_up", "fallback" },
+                    ["<PageDown>"] = { "scroll_documentation_down", "fallback" },
                 },
-                config = function()
-                    local cmp = require 'cmp'
-                    local luasnip = require 'luasnip'
-                    luasnip.config.setup {}
-
-                    cmp.setup {
-                        snippet = {
-                            expand = function(args)
-                                luasnip.lsp_expand(args.body)
-                            end,
-                        },
-                        -- completion = { autocomplete = false, completeopt = 'menu,menuone,noinsert' },
-                        completion = { completeopt = 'menu,menuone,noinsert' },
-
-                        mapping = cmp.mapping.preset.insert {
-                            -- Select the [n]ext item
-                            ['<C-n>'] = cmp.mapping.select_next_item(),
-                            -- Select the [p]revious item
-                            ['<C-p>'] = cmp.mapping.select_prev_item(),
-
-                            -- Scroll the documentation window [b]ack / [f]orward
-                            ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-                            ['<C-f>'] = cmp.mapping.scroll_docs(4),
-
-                            -- Accept ([y]es) the completion.
-                            --  This will auto-import if your LSP supports it.
-                            --  This will expand snippets if the LSP sent a snippet.
-                            ['<C-y>'] = cmp.mapping.confirm { select = true },
-
-                            -- If you prefer more traditional completion keymaps,
-                            -- you can uncomment the following lines
-                            --['<CR>'] = cmp.mapping.confirm { select = true },
-                            --['<Tab>'] = cmp.mapping.select_next_item(),
-                            --['<S-Tab>'] = cmp.mapping.select_prev_item(),
-
-                            -- Manually trigger a completion from nvim-cmp.
-                            --  Generally you don't need this, because nvim-cmp will display
-                            --  completions whenever it has completion options available.
-                            ['<C-Space>'] = cmp.mapping.complete {},
-
-                            ['<C-l>'] = cmp.mapping(function()
-                                if luasnip.expand_or_locally_jumpable() then
-                                    luasnip.expand_or_jump()
-                                end
-                            end, { 'i', 's' }),
-                            ['<C-h>'] = cmp.mapping(function()
-                                if luasnip.locally_jumpable(-1) then
-                                    luasnip.jump(-1)
-                                end
-                            end, { 'i', 's' }),
-
-                        },
-                        sources = {
-                            { name = 'nvim_lsp' },
-                            { name = 'luasnip' },
-                            { name = 'path' },
-                        }, {
-                            { name = "buffer" },
-                        },
+                completion = {
+                    list = {
+                        selection = { preselect = false, auto_insert = true }
                     }
-                end,
-            },
+                },
+                appearance = {
+                    use_nvim_cmp_as_default = true,
+                    nerd_font_variant = 'mono'
+                },
 
-    { -- Fuzzy Finder (files, lsp, etc)
-        'nvim-telescope/telescope.nvim',
-        event = 'VimEnter',
-        branch = '0.1.x',
-        dependencies = {
-            'nvim-lua/plenary.nvim',
-            {
-                'nvim-telescope/telescope-fzf-native.nvim',
-                build = 'make',
-                cond = function()
-                    return vim.fn.executable 'make' == 1
-                end,
+                sources = {
+                    -- default = { 'lsp', 'path', 'snippets', 'buffer' },
+                    default = { 'path', 'snippets', 'buffer' },
+                },
+                cmdline = { enabled = false },
             },
-            { 'nvim-telescope/telescope-ui-select.nvim' },
+            opts_extend = { "sources.default" }
+        },
+
+    {
+        "folke/snacks.nvim",
+        priority = 1000,
+        lazy = false,
+        ---@type snacks.Config
+        opts = {
+            -- your configuration comes here
+            -- or leave it empty to use the default settings
+            -- refer to the configuration section below
+
+            -- bigfile = { enabled = true },
+            -- dashboard = { enabled = false },
+            -- explorer = { enabled = false },
+            -- indent = { enabled = false },
+            -- input = { enabled = false },
+            -- picker = { enabled = true },
+            -- notifier = { enabled = false },
+            -- quickfile = { enabled = true },
+            -- scope = { enabled = false },
+            -- scroll = { enabled = true },
+            -- statuscolumn = { enabled = false },
+
+            notifier = { enabled = false },
+            notify = { enabled = false },
+
+            terminal = {
+                    win = {
+                        keys = {
+                            term_normal = {
+                                "<esc><esc>", function() return "<C-\\><C-n>" end,
+                                mode = "t",
+                                expr = true,
+                                desc = "Double escpae to normal mode",
+                            },
+                            q = "hide",
+                            ["<esc>"] = "hide",
+                            nav_h = { "<C-h>", term_nav("h"), desc = "Go to Left Window", expr = true, mode = "t" },
+                            nav_j = { "<C-j>", term_nav("j"), desc = "Go to Lower Window", expr = true, mode = "t" },
+                            nav_k = { "<C-k>", term_nav("k"), desc = "Go to Upper Window", expr = true, mode = "t" },
+                            nav_l = { "<C-l>", term_nav("l"), desc = "Go to Right Window", expr = true, mode = "t" },
+                        }
+                    },
+                    styles = {
+                        float = {
+                            border = "rounded"
+                        }
+                    }
+                },
+            words = { enabled = false },
         },
         keys = {
-            {'<leader>h', "<cmd>Telescope help_tags<cr>"},
-            {'<leader>f', "<cmd>Telescope find_files<cr>"},
-            {'<leader>,', "<cmd>Telescope builtin<cr>"},
-            {'<leader>g', "<cmd>Telescope grep_string<cr>"},
-            {'<leader>G', "<cmd>Telescope live_grep<cr>"},
-            {'<leader>q', "<cmd>Telescope diagnostics_workspace<cr>"},
-            {'<leader>.', "<cmd>Telescope resume<cr>"},
-            {'<leader><leader>', "<cmd>Telescope buffers<cr>"},
-            {'<leader>/', "<cmd>Telescope current_buffer_fuzzy_find<cr>"},
+            {'<leader>h', function() Snacks.picker.help() end, desc = "Help Pages" },
+            {'<leader>f', function() Snacks.picker.files() end, desc = "Find Files" },
+            {'<leader>,', function() Snacks.picker.pickers() end, desc = "Find all available pickers" },
+            {'<leader>g', function() Snacks.picker.grep() end, desc = "Grep" },
+            {'<leader>G', function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x"} },
+            {'<leader>q', function() Snacks.picker.diagnostics() end, desc = "Diagnostics" },
+            {'<leader>.', function() Snacks.picker.resume() end, desc = "Resume" },
+            {'<leader><leader>', function() Snacks.picker.buffers() end, desc = "Buffers" },
+            {'<leader>/', function() Snacks.picker.lines() end, desc = "Buffer Lines" },
+            {'<leader>o', function() Snacks.picker.pick("grep", {dirs = {'./libs'}, follow = true, title = "Symbols"}) end, desc = "Buffer Lines" },
+            {'<leader>t', function() Snacks.terminal.toggle() end, desc = "Toggle Terminal" },
+            {'<leader>n', function() Snacks.terminal.open("ripnote", { auto_close = true, }) end, desc = "Open ripnote"}
         },
-        config = function()
-            -- See `:help telescope` and `:help telescope.setup()`
-            require('telescope').setup {
-                defaults = {
-                    path_display = { "truncate" },
-                },
-                extensions = {
-                    ['ui-select'] = {
-                        require('telescope.themes').get_dropdown(),
-                    },
-                },
-            }
-
-            -- Enable Telescope extensions if they are installed
-            pcall(require('telescope').load_extension, 'fzf')
-            pcall(require('telescope').load_extension, 'ui-select')
-        end,
     },
 
     {
@@ -432,7 +401,12 @@ require("lazy").setup({
         event = "VeryLazy",
         config = function() require('mini.pairs').setup()
             require('mini.surround').setup()
-            require('mini.jump2d').setup()
+                require('mini.jump2d').setup({
+                    mappings = {
+                        start_jumping = 'gw',
+                    },
+                })
+            require('mini.pairs').setup()
         end,
     },
 
@@ -444,8 +418,6 @@ require("lazy").setup({
         -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
         opts = {
             ensure_installed = { 'javascript', 'python', 'typescript', 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'java' },
-            -- Autoinstall languages that are not installed
-            auto_install = false,
             highlight = {
                 enable = true,
             },
@@ -459,6 +431,88 @@ require("lazy").setup({
             },
         },
         --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
+    },
+
+    {
+      "jake-stewart/multicursor.nvim",
+      config = function()
+        local mc = require("multicursor-nvim")
+        mc.setup()
+
+        local set = vim.keymap.set
+
+        -- Add or skip cursor above/below the main cursor.
+        set({"n", "x"}, "<A-up>",
+          function() mc.lineAddCursor(-1) end)
+        set({"n", "x"}, "<A-down>",
+          function() mc.lineAddCursor(1) end)
+
+        -- Add or skip adding a new cursor by matching word/selection
+        set({"n", "x"}, "<A-n>", function() mc.matchAddCursor(1) end)
+        set({"n", "x"}, "<A-N>", function() mc.matchSkipCursor(1) end)
+
+        set({"n", "x"}, "mw", function() mc.operator({ motion = "iw", visual = true }) end)
+
+        -- Press `mWi"ap` will create a cursor in every match of string captured by `i"` inside range `ap`.
+        set("n", "mW", mc.operator)
+
+        -- Add all matches in the document
+        set({"n", "x"}, "<A-A>", mc.matchAllAddCursors)
+
+        -- Rotate the main cursor.
+        set({"n", "x"}, "<left>", mc.nextCursor)
+        set({"n", "x"}, "<right>", mc.prevCursor)
+
+        -- Delete the main cursor.
+        set({"n", "x"}, "<A-x>", mc.deleteCursor)
+
+        -- Add and remove cursors with control + left click.
+        set("n", "<c-leftdrag>", mc.handleMouseDrag)
+        set("n", "<c-leftmouse>", mc.handleMouse)
+
+        -- Easy way to add and remove cursors using the main cursor.
+        set({"n", "x"}, "<c-q>", mc.toggleCursor)
+
+        -- Clone every cursor and disable the originals.
+        set({"n", "x"}, "<leader><c-q>", mc.duplicateCursors)
+
+        set("n", "<esc>", function()
+          if not mc.cursorsEnabled() then
+            mc.enableCursors()
+          elseif mc.hasCursors() then
+            mc.clearCursors()
+          else
+            -- Default <esc> handler.
+          end
+        end)
+
+        -- Align cursor columns.
+        set("n", "&", mc.alignCursors)
+
+        -- Split visual selections by regex.
+        set("x", "S", mc.splitCursors)
+
+        -- Append/insert for each line of visual selections.
+        set("x", "I", mc.insertVisual)
+        set("x", "A", mc.appendVisual)
+
+        -- match new cursors within visual selections by regex.
+        set("x", "M", mc.matchCursors)
+
+        -- Jumplist support
+        set({"x", "n"}, "<c-o>", mc.jumpBackward)
+        set({"x", "n"}, "<c-i>", mc.jumpForward)
+
+        -- Customize how cursors look.
+        local hl = vim.api.nvim_set_hl
+        hl(0, "MultiCursorCursor", { link = "Cursor" })
+        hl(0, "MultiCursorVisual", { link = "Visual" })
+        hl(0, "MultiCursorSign", { link = "SignColumn"})
+        hl(0, "MultiCursorMatchPreview", { link = "Search" })
+        hl(0, "MultiCursorDisabledCursor", { link = "Visual" })
+        hl(0, "MultiCursorDisabledVisual", { link = "Visual" })
+        hl(0, "MultiCursorDisabledSign", { link = "SignColumn"})
+      end
     },
 
   },
