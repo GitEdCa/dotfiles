@@ -1,5 +1,7 @@
 #!/bin/bash
 
+author=""
+
 set -xe
 
 error() {
@@ -18,40 +20,43 @@ confirm_or_fail() {
 	esac
 }
 
-editor=${EDITOR:=micro}
+editor=${EDITOR:=nvim}
 
 create_and_edit() {
-	note_filename="$(date -I).md"
+        # Define the header content
+        note_timestamp=$(date +%G%m%d%H%M%S)
+        note_name="${note_timestamp}_${1##*.}"
+        HEADER="# File: ${note_name}
+Author: $author
+Date: ${note_timestamp}
 
-	if [ -f "$note_filename" ]; then
-		$editor "$note_filename"
-	else
-		touch "$note_filename"
-		echo "$note_filename"
-		echo "$note_filename" > "$note_filename"
-		echo "" >>"$note_filename"
-		echo "" >>"$note_filename"
-		$editor "$note_filename" +2
-	fi
+"
+	nvim "$note_name" -c "execute 'normal! i$HEADER'" -c "startinsert"
 }
 
 note_path=${NOTE_PATH:=$HOME/notes}
 mkdir -p -v "$note_path" || error "could not create $note_path"
 cd "$note_path" || error "$note_path does not exist"
-# note_filename="$(date -I).md"
 
 if [ $# -eq 0 ]; then
 	ref=$(rg --line-number --color=always --with-filename --follow . --field-match-separator ' ' |
-		fzf --ansi --preview "bat --color=always {1} --highlight-line {2}" |
+		# fzf --ansi --preview "bat --color=always {1} --highlight-line {2}" |
+		fzf --ansi --preview "cat {1}" |
+		#fzf --ansi --bind "ctrl-n:execute(create_and_edit)" |
 		head -n1 | awk '{print $1 " +" $2;}')
 
-	if [ -n "$ref" ]; then
-		# shellcheck disable=SC2086
-		$editor $ref # intentional word split: `[filename] +[line_number]`
-	else
-		create_and_edit
-	fi
+        # if [ -n "$ref" ]; then
+        #       $editor $ref # intentional word split: `[filename] +[line_number]`
+        # else
+        #       create_and_edit
+        # fi
 
-	exit 0
+        if [[ "$ref" ]]; then
+                # shellcheck disable=SC2086
+                $editor $ref # intentional word split: `[filename] +[line_number]`
+        fi
+
+        exit 0
 fi
 
+create_and_edit $1
