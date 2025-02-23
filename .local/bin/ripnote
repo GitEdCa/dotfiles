@@ -25,7 +25,7 @@ editor=${EDITOR:=nvim}
 create_and_edit() {
         # Define the header content
         note_timestamp=$(date +%G%m%d%H%M%S)
-        note_name="${note_timestamp}_${1##*.}"
+        note_name="${note_timestamp}_${1##*.}.md"
         HEADER="# File: ${note_name}
 Author: $author
 Date: ${note_timestamp}

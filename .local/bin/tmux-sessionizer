@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-search_folders=("$HOME" $HOME/lab/* "$REPOS/*")
+search_folders=($HOME $HOME/lab/* $REPOS/*)
 
 if [[ $# -eq 1 ]]; then
 	selected=$1
